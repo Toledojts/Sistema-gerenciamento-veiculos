@@ -10,11 +10,9 @@ import entidades.Proprietario;
 import entidades.Veiculo;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Gerenciador {
-    Scanner sc = new Scanner(System.in);
 
     public Gerenciador() {
     }
@@ -99,7 +97,11 @@ public class Gerenciador {
 
         // 6. Salvar Veículo no Banco
         // Adicionar verificação se placa já existe seria ideal aqui antes de salvar
-        veiculoDAO.salvar(novoVeiculo);
+        boolean salvouVeiculo = veiculoDAO.salvar(novoVeiculo);
+        if (!salvouVeiculo){
+            System.err.println("[Gerenciador] Falha ao salvar o veículo. Verifique os logs do DAO.");
+            return false;
+        }
         System.out.println("[Gerenciador] Cadastro concluído com sucesso para placa: " + placa);
         return true; // Indica sucesso
     }

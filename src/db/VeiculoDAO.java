@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class VeiculoDAO {
 
-    public void salvar(Veiculo veiculo) {
+    public boolean salvar(Veiculo veiculo) {
         // Assumindo tabela veiculos com colunas: placa, id_marca, id_modelo, ano, cor, cpf_proprietario
         String sql = "INSERT INTO veiculo (placa, idMarca, idModelo, ano, cor, proprietarioAtualCpf) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = Conexao.getConnection();
@@ -23,10 +23,12 @@ public class VeiculoDAO {
 
             pstmt.executeUpdate();
             System.out.println("[VeiculoDAO] Veículo salvo com placa: " + veiculo.getPlaca());
+            return true;
 
         } catch (SQLException e) {
             System.err.println("Erro ao salvar veículo: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 

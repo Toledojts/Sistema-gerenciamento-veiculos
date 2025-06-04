@@ -16,7 +16,7 @@ public class ProprietarioDAO {
             pstmt.setString(1, cpf);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    proprietario = new Proprietario(rs.getString("cpf"), rs.getString("nome"));
+                    proprietario = new Proprietario(rs.getString("nome"), rs.getString("cpf"));
                 }
             }
         } catch (SQLException e) {
