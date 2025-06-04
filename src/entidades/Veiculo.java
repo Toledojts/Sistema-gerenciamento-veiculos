@@ -5,20 +5,20 @@ import java.util.List;
 
 public class Veiculo {
     private String placa;
-    private String marca;
-    private String modelo;
+    private Marca marca;
+    private Modelo modelo;
     private String cor;
     private int ano;
     private String padraoPlaca;
     private Proprietario proprietarioAtual;
     List<Transferencia> historicoTransfer = new ArrayList<>();
 
-    public Veiculo(String placa, String marca, String modelo, String cor, int ano, Proprietario proprietarioAtual) {
+    public Veiculo (String placa, Marca marca, Modelo modelo, int ano, String cor, Proprietario proprietarioAtual) {
         this.placa = placa;
         this.marca = marca;
         this.modelo = modelo;
-        this.cor = cor;
         this.ano = ano;
+        this.cor = cor;
         this.proprietarioAtual = proprietarioAtual;
     }
 
@@ -30,20 +30,12 @@ public class Veiculo {
         this.placa = placa;
     }
 
-    public String getMarca() {
+    public Marca getMarca() {
         return marca;
     }
 
-    public void setMarca(String marca) {
-        this.marca = marca;
-    }
-
-    public String getModelo() {
+    public Modelo getModelo() {
         return modelo;
-    }
-
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
     }
 
     public String getCor() {

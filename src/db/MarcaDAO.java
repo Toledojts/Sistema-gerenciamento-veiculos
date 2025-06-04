@@ -19,11 +19,10 @@ public class MarcaDAO {
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-
             System.out.println("[MarcaDAO] Executando consulta: " + sql);
             while (rs.next()) {
                 // Lê os dados de cada linha do resultado
-                long id = rs.getLong("idMarca"); // Use o nome exato da coluna
+                int id = rs.getInt("idMarca"); // Use o nome exato da coluna
                 String nome = rs.getString("nomeMarca"); // Use o nome exato da coluna
 
                 // Cria um objeto Marca e adiciona à lista

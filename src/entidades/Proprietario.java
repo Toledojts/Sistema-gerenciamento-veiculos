@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Proprietario {
     private String nome;
-    private String cpf;
+    private final String cpf;
     private List<Veiculo> posseVeiculos = new ArrayList<>();
 
     public Proprietario(String nome, String cpf) {
@@ -17,16 +17,12 @@ public class Proprietario {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getCpf() {
         return cpf;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public void removerVeiculoPropietario(Veiculo veiculoARemover){

@@ -15,7 +15,7 @@ public class ModeloDAO {
     public List<Modelo> listarPorMarca(Marca marca) {
         List<Modelo> modelos = new ArrayList<>();
         // Use nomes exatos das suas colunas (ex: id_modelo, nome_modelo, id_marca)
-        String sql = "SELECT idModelo, nomeModelo FROM modelo WHERE idMarca = ? ORDER BY nomeModelo"; // Assumindo tabela 'modelos'
+        String sql = "SELECT idModelo, nomeModelo FROM modelo WHERE idMarca = ? ORDER BY idModelo ASC";
 
         if (marca == null) {
             System.err.println("[ModeloDAO] Erro: Marca não pode ser nula para listar modelos.");
@@ -32,7 +32,7 @@ public class ModeloDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    long id = rs.getLong("idModelo"); // Nome exato da coluna
+                    int id = rs.getInt("idModelo"); // Nome exato da coluna
                     String nome = rs.getString("nomeModelo"); // Nome exato da coluna
 
                     // Cria o objeto Modelo, passando a Marca que já temos

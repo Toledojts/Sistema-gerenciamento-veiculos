@@ -21,9 +21,7 @@ public class Conexao {
     }
 
     public static Connection getConnection() throws SQLException {
-        System.out.println("[Conexao] Tentando obter conexão com o banco de dados...");
-        Connection conn = DriverManager.getConnection(url, usuario, senha);
-        System.out.println("[Conexao] Conexão estabelecida com sucesso.");
-        return conn;
+        return DriverManager.getConnection(url, usuario, senha);
+        // { <-- REMOVA ESTA CHAVE
     }
 }
