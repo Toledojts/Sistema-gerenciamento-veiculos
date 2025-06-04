@@ -7,11 +7,13 @@ public class Transferencia {
     private Proprietario antigoProprietario;
     private Proprietario novoProprietario;
     private LocalDate dataTransferencia;
+    private Veiculo veiculo;
 
-    public Transferencia(Proprietario antigoProprietario, Proprietario novoProprietario, LocalDate dataTransferencia) {
+    public Transferencia(Proprietario antigoProprietario, Proprietario novoProprietario, LocalDate dataTransferencia, Veiculo veiculo) {
         this.antigoProprietario = antigoProprietario;
         this.novoProprietario = novoProprietario;
         this.dataTransferencia = dataTransferencia;
+        this.veiculo = veiculo;
     }
 
     public Proprietario getAntigoProprietario() {
@@ -36,6 +38,14 @@ public class Transferencia {
 
     public void setDataTransferencia(LocalDate dataTransferencia) {
         this.dataTransferencia = dataTransferencia;
+    }
+
+    public Veiculo getVeiculo() {
+        return veiculo;
+    }
+
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
     }
 
     public String toString(){

@@ -1,12 +1,10 @@
 package aplicacao;
 
-import db.MarcaDAO;
-import db.ModeloDAO;
-import db.ProprietarioDAO;
-import db.VeiculoDAO;
+import db.*;
 import entidades.Marca;
 import entidades.Modelo;
 import entidades.Proprietario;
+import entidades.Veiculo;
 import servicos.Gerenciador;
 
 import java.util.InputMismatchException;
@@ -68,7 +66,8 @@ public class Program {
                 break;
             case 2:
                 System.out.println("Funcionalidade de Transferência ainda não implementada.");
-                // Chamar método executarTransferenciaVeiculo();
+                executarTransferenciaVeiculo();
+
                 break;
             case 3:
                 System.out.println("Funcionalidade de Consulta ainda não implementada.");
@@ -113,6 +112,11 @@ public class Program {
         } else {
             System.out.println("\n--- FALHA NO CADASTRO. Verifique os erros e tente novamente. ---");
         }
+    }
+
+    private void transferirPropriedade(){
+        System.out.println("---INICIANDO TRANSFERÊNCIA---");
+
     }
 
     private Marca selecionarMarca() {
@@ -244,15 +248,77 @@ public class Program {
         }
     }
 
+    private void executarTransferenciaVeiculo() {
+        System.out.println("\n--- INICIANDO TRANSFERÊNCIA DE PROPRIEDADE ---");
+
+        System.out.print("Digite a placa do veículo a ser transferido: ");
+        String placaVeiculoInput = sc.nextLine().trim();
+
+        // === VERIFICAÇÃO INICIAL DO VEÍCULO ===
+        Veiculo veiculoParaTransferir = gerenciador.buscarVeiculoPorPlacaMenu(placaVeiculoInput);
+
+        if (veiculoParaTransferir == null) {
+            System.out.println("Veículo com placa '" + placaVeiculoInput.toUpperCase() + "' não encontrado no sistema. Transferência cancelada.");
+            return; // Interrompe a operação
+        } else {
+            System.out.println("Veículo encontrado: " +
+                    (veiculoParaTransferir.getMarca() != null ? veiculoParaTransferir.getMarca().getNome() : "Marca Desconhecida") + " " +
+                    (veiculoParaTransferir.getModelo() != null ? veiculoParaTransferir.getModelo().getNome() : "Modelo Desconhecido") +
+                    ", Placa: " + veiculoParaTransferir.getPlaca() +
+                    ", Proprietário Atual: " + (veiculoParaTransferir.getProprietarioAtual() != null ? veiculoParaTransferir.getProprietarioAtual().getNome() : "N/A"));
+        }
+        // === FIM DA VERIFICAÇÃO INICIAL DO VEÍCULO ===
+
+        System.out.print("Digite o CPF do NOVO proprietário (11 dígitos): ");
+        String cpfNovoProprietario = sc.nextLine().trim();
+
+        String nomeNovoProprietario = null;
+        Proprietario proprietarioExistente = gerenciador.buscarProprietarioPorCPF(cpfNovoProprietario);
+
+        if (proprietarioExistente == null) {
+            System.out.println("Proprietário com CPF " + cpfNovoProprietario + " não encontrado.");
+            System.out.print("Digite o nome completo do NOVO proprietário para cadastro: ");
+            nomeNovoProprietario = sc.nextLine().trim();
+            if (nomeNovoProprietario.isEmpty()) {
+                System.out.println("Nome não pode ser vazio para um novo cadastro. Transferência cancelada.");
+                return;
+            }
+        } else {
+            System.out.println("Proprietário encontrado: " + proprietarioExistente.getNome() + " (CPF: " + proprietarioExistente.getCpf() + ")");
+        }
+
+        System.out.print("Digite a data da transferência (formato dd/MM/yyyy): ");
+        String dataTransferenciaStr = sc.nextLine().trim();
+
+        // Agora, ao chamar o método principal de transferência no Gerenciador,
+        // ele ainda fará suas próprias validações e busca do veículo para garantir
+        // a consistência dos dados no momento da transação.
+        // Passaremos a placa original que o usuário digitou.
+        boolean sucesso = gerenciador.transferirPropriedade(
+                placaVeiculoInput, // Passa a placa que o usuário digitou
+                cpfNovoProprietario,
+                nomeNovoProprietario,
+                dataTransferenciaStr
+        );
+
+        if (sucesso) {
+            System.out.println("\n--- TRANSFERÊNCIA DE PROPRIEDADE REALIZADA COM SUCESSO! ---");
+        } else {
+            // A mensagem de erro específica já terá sido impressa pelo Gerenciador ou DAOs
+            System.out.println("\n--- FALHA NA TRANSFERÊNCIA DE PROPRIEDADE. ---");
+        }
+    }
+
     public static void main(String[] args) {
         // 1. Configurar os DAOs
         MarcaDAO marcaDAO = new MarcaDAO();
         ModeloDAO modeloDAO = new ModeloDAO();
         ProprietarioDAO proprietarioDAO = new ProprietarioDAO();
         VeiculoDAO veiculoDAO = new VeiculoDAO();
+        TransferenciaDAO transferenciaDAO = new TransferenciaDAO();
 
         // 2. Criar o Gerenciador com os DAOs
-        Gerenciador gerenciador = new Gerenciador(marcaDAO, modeloDAO, proprietarioDAO, veiculoDAO);
+        Gerenciador gerenciador = new Gerenciador(marcaDAO, modeloDAO, proprietarioDAO, veiculoDAO, transferenciaDAO);
 
         // 3. Criar a instância da Aplicação (Program)
         Program app = new Program(gerenciador);
