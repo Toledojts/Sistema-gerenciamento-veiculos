@@ -27,7 +27,7 @@ public class ModeloDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // Define o parâmetro da query (?)
-            pstmt.setLong(1, marca.getId());
+            pstmt.setInt(1, marca.getId());
             System.out.println("[ModeloDAO] Executando consulta: " + pstmt.toString()); // Mostra a query com o parâmetro
 
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -47,6 +47,4 @@ public class ModeloDAO {
         }
         return modelos;
     }
-
-    // Outros métodos do DAO (buscarPorId, salvar, etc.) podem ser adicionados aqui
 }

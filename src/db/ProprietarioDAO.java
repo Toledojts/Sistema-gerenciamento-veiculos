@@ -20,8 +20,9 @@ public class ProprietarioDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar proprietário por CPF: " + e.getMessage());
+            System.err.println("[ERRO NO DAO - ProprietarioDAO.buscarPorCPF] Falha ao buscar proprietário com CPF '" + cpf + "': " + e.getMessage());
             e.printStackTrace();
+            return null;
         }
         return proprietario;
     }
@@ -38,7 +39,7 @@ public class ProprietarioDAO {
 
             return true;
         } catch (SQLException e) {
-            System.err.println("Erro ao salvar proprietário: " + e.getMessage());
+            System.err.println("[ERRO NO DAO - ProprietarioDAO.salvar] Falha ao salvar proprietário com CPF '" + (proprietario != null ? proprietario.getCpf() : "N/A") + "': " + e.getMessage());
             e.printStackTrace();
             return false;
         }

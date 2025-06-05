@@ -68,4 +68,5 @@ public class PlacaUtil {
 
         return "" + l1 + l2 + l3 + n1 + lNovaPos5 + n3 + n4;
     }
+
 }

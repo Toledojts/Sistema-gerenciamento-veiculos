@@ -2,6 +2,7 @@ package servicos;
 
 import db.*;
 import entidades.*;
+import relatorios.ContagemVeiculosPorMarca;
 import utilitarios.DataUtil;
 import utilitarios.PlacaUtil;
 
@@ -11,14 +12,11 @@ import java.util.regex.Pattern;
 
 public class Gerenciador {
 
-    public Gerenciador() {
-    }
-
-    private MarcaDAO marcaDAO;
-    private ModeloDAO modeloDAO;
-    private ProprietarioDAO proprietarioDAO;
-    private VeiculoDAO veiculoDAO;
-    private TransferenciaDAO transferenciaDAO;
+    private final MarcaDAO marcaDAO;
+    private final ModeloDAO modeloDAO;
+    private final ProprietarioDAO proprietarioDAO;
+    private final VeiculoDAO veiculoDAO;
+    private final TransferenciaDAO transferenciaDAO;
 
     // Construtor para injeção dos DAOs
     public Gerenciador(MarcaDAO marcaDAO, ModeloDAO modeloDAO, ProprietarioDAO proprietarioDAO, VeiculoDAO veiculoDAO, TransferenciaDAO transferenciaDAO) {
@@ -47,6 +45,12 @@ public class Gerenciador {
             System.err.println("[Gerenciador] Erro: Formato da placa inválido.");
             return false;
         }
+
+        if (verificarPlacaExistente(placaInput)){
+            System.out.println("[Gerenciador] Erro: Placa já cadastrada!");
+            return false;
+        }
+
         // Normalizar placa para maiúsculas, por exemplo
         String placa = placaInput.toUpperCase();
         System.out.println("[Gerenciador] Placa validada: " + placa);
@@ -105,7 +109,17 @@ public class Gerenciador {
         return true; // Indica sucesso
     }
 
-    // --- Métodos de Validação Internos ---
+    public boolean verificarPlacaExistente(String placaInput){
+        if (placaInput == null || placaInput.trim().isEmpty()){
+            return false;
+        }
+
+        String placaNormalizada = placaInput.toUpperCase().replace("-", "");
+
+        Veiculo veiculo = veiculoDAO.buscarPorPlaca(placaNormalizada);
+
+        return veiculo != null;
+    }
 
     public boolean validarFormatoPlaca(String placa) {
         if (placa == null) return false;
@@ -252,5 +266,57 @@ public class Gerenciador {
         return veiculoDAO.buscarPorPlaca(placaNormalizada);
     }
 
-    // Outros métodos do Gerenciador (transferir, baixar, consultar, etc.) viriam aqui
+    public List<Veiculo> consultarVeiculoPorCpf(String cpfConsulta){
+        if (!validarFormatoCPF(cpfConsulta)) {
+            System.err.println("[Gerenciador] Formato de CPF inválido para consulta.");
+            return null; // Ou lançar uma exceção, ou retornar lista vazia controlada
+        }
+
+        return veiculoDAO.buscarVeiculosPorCpf(cpfConsulta);
+    }
+
+    public List<Transferencia> consultarHistorico(String placaInput){
+        String placaNormalizada = placaInput != null ? placaInput.toUpperCase().replace("-", "") : null;
+
+        if (placaNormalizada == null || !(PlacaUtil.ehPlacaAntiga(placaNormalizada) || PlacaUtil.ehPlacaMercosul(placaNormalizada))) {
+            System.err.println("[Gerenciador] Formato de placa inválido para consulta de histórico.");
+            return null; // Ou lista vazia
+        }
+
+        return transferenciaDAO.buscarTransferenciasPorPlaca(placaNormalizada);
+    }
+
+    public List<ContagemVeiculosPorMarca> gerarRelatorioVeiculosPorMarca(){
+        System.out.println("[Gerenciador] Gerando relatório de veículos por marca...");
+        return veiculoDAO.contarVeiculosPorMarca();
+    }
+
+    public List<Transferencia> gerarRelatorioVeiculosTransferidosPeriodo(String dataInicioStr, String dataFimStr){
+        LocalDate dataInicio = DataUtil.parseData(dataInicioStr);
+        LocalDate dataFim = DataUtil.parseData(dataFimStr);
+
+        if (dataInicio == null) {
+            System.err.println("[Gerenciador] Data de início inválida para o relatório.");
+            return null; // Ou new ArrayList<>() para indicar "nada encontrado devido a erro de input"
+        }
+        if (dataFim == null) {
+            System.err.println("[Gerenciador] Data de fim inválida para o relatório.");
+            return null;
+        }
+
+        if (dataInicio.isAfter(dataFim)) {
+            System.err.println("[Gerenciador] A data de início não pode ser posterior à data de fim.");
+            return null;
+        }
+
+        System.out.println("[Gerenciador] Gerando relatório de veículos transferidos de " +
+                DataUtil.formatarData(dataInicio) + " até " + DataUtil.formatarData(dataFim)); //
+        return transferenciaDAO.buscarTransferenciasPorPeriodo(dataInicio, dataFim);
+    }
+
+    public List<Veiculo> gerarRelatorioVeiculosPlacaAntiga(){
+        System.out.println("[Gerenciador] Gerando relatório de veículos com placa antiga...");
+        return veiculoDAO.buscarVeiculosComPlacaAntiga();
+    }
+
 }

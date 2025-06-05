@@ -1,16 +1,14 @@
 package aplicacao;
 
 import db.*;
-import entidades.Marca;
-import entidades.Modelo;
-import entidades.Proprietario;
-import entidades.Veiculo;
+import entidades.*;
+import relatorios.ContagemVeiculosPorMarca;
 import servicos.Gerenciador;
+import utilitarios.DataUtil;
 
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-
 
 
 public class Program {
@@ -23,14 +21,13 @@ public class Program {
         this.gerenciador = gerenciador;
     }
 
-    // Método principal que executa o menu
     public void executarMenu() {
         int opcao;
         do {
             exibirMenu();
             opcao = lerOpcao();
             processarOpcao(opcao);
-        } while (opcao != 5);
+        } while (opcao != 6);
     }
 
     private void exibirMenu() {
@@ -39,7 +36,8 @@ public class Program {
         System.out.println("2 - Transferência de propriedade");
         System.out.println("3 - Consulta de informações");
         System.out.println("4 - Relatórios");
-        System.out.println("5 - Sair");
+        System.out.println("5 - Baixa de veículos");
+        System.out.println("6 - Sair");
         System.out.print("Escolha uma opção: ");
     }
 
@@ -61,24 +59,22 @@ public class Program {
     private void processarOpcao(int opcao) {
         switch (opcao) {
             case 1:
-                // Chama o método que encapsula o fluxo de cadastro
                 executarCadastroVeiculo();
                 break;
             case 2:
-                System.out.println("Funcionalidade de Transferência ainda não implementada.");
                 executarTransferenciaVeiculo();
-
                 break;
             case 3:
-                System.out.println("Funcionalidade de Consulta ainda não implementada.");
-                // Chamar método executarConsultaVeiculo();
+                executarConsultaInformacoes();
                 break;
             case 4:
-                System.out.println("Funcionalidade de Relatórios ainda não implementada.");
-                // Chamar método executarRelatorios();
+                executarMenuRelatorios();
                 break;
             case 5:
-                System.out.println("Saindo do sistema...");
+                System.out.println("Baixa de veículos ainda não implementada");
+                break;
+            case 6:
+                System.out.println("Saindo...");
                 break;
             default:
                 if (opcao != -1) { // Evita mensagem de erro se a leitura falhou
@@ -86,13 +82,8 @@ public class Program {
                 }
                 break;
         }
-        // Pausa rápida para o usuário ler a saída antes do menu reaparecer (opcional)
-        if (opcao != 5) {
-            System.out.println("\nPressione Enter para continuar...");
-        }
     }
 
-    // --- Lógica de Cadastro (agora chamada pelo menu) ---
     private void executarCadastroVeiculo() {
         System.out.println("\n--- INICIANDO CADASTRO DE VEÍCULO ---");
         Marca marcaSelecionada = selecionarMarca();
@@ -100,6 +91,11 @@ public class Program {
         Modelo modeloSelecionado = selecionarModelo(marcaSelecionada);
         if (modeloSelecionado == null) return;
         String placa = obterPlacaValida();
+        if (gerenciador.verificarPlacaExistente(placa)){
+            System.out.println("[Program] ERRO: Placa já cadastrada. Operação cancelada.");
+            return;
+        }
+
         int ano = obterAnoValido();
         String cor = obterCorValida();
         String cpf = obterCPFValido();
@@ -112,11 +108,6 @@ public class Program {
         } else {
             System.out.println("\n--- FALHA NO CADASTRO. Verifique os erros e tente novamente. ---");
         }
-    }
-
-    private void transferirPropriedade(){
-        System.out.println("---INICIANDO TRANSFERÊNCIA---");
-
     }
 
     private Marca selecionarMarca() {
@@ -306,6 +297,181 @@ public class Program {
         } else {
             // A mensagem de erro específica já terá sido impressa pelo Gerenciador ou DAOs
             System.out.println("\n--- FALHA NA TRANSFERÊNCIA DE PROPRIEDADE. ---");
+        }
+    }
+
+    private void executarConsultaInformacoes(){
+        System.out.println("\n--- INICIANDO CONSULTA DE INFORMAÇÕES ---");
+        System.out.println("1 - Consultar veículo por placa");
+        System.out.println("2 - Consultar veículos por proprietário");
+        System.out.println("3 - Consultar histórico de transferência de um veículo");
+        System.out.print("Digite a opção desejada: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        switch (n){
+            case 1:
+                System.out.print("Digite a placa do veículo: ");
+                String placaParametro = sc.nextLine();
+
+                Veiculo veiculoConsulta = gerenciador.buscarVeiculoPorPlacaMenu(placaParametro);
+
+                if (veiculoConsulta != null) {
+                    System.out.println("Veículo encontrado: ");
+                    System.out.println(veiculoConsulta);
+                }
+                break;
+
+            case 2:
+                System.out.print("Digite o CPF do proprietário: ");
+                String cpfConsulta = sc.nextLine();
+
+                Proprietario proprietario = gerenciador.buscarProprietarioPorCPF(cpfConsulta);
+
+                if (proprietario == null){
+                    System.out.println("Proprietário não encontrado.");
+                } else {
+                    System.out.println("Veiculos cadastrados no nome de " + proprietario.getNome() + ": ");
+                    List<Veiculo> listaVeiculosEncontrados = gerenciador.consultarVeiculoPorCpf(cpfConsulta);
+                    System.out.println();
+                    if (listaVeiculosEncontrados.isEmpty()){
+                        System.out.println("Nenhum veículo encontrado.");
+                    } else {
+                        for (Veiculo obj : listaVeiculosEncontrados){
+                            System.out.println(obj);
+                            System.out.println();
+                        }
+                    }
+                }
+                break;
+
+            case 3:
+                System.out.print("Digite a placa do veículo: ");
+                String placaInput = sc.nextLine();
+
+                Veiculo veiculo = gerenciador.buscarVeiculoPorPlacaMenu(placaInput);
+
+                if (veiculo == null){
+                    System.out.println("Veículo não encontrado.");
+                } else {
+                    System.out.println("Veículo encontrado: ");
+                    System.out.println(veiculo);
+
+                    List<Transferencia> historico = gerenciador.consultarHistorico(placaInput);
+
+                    if (historico.isEmpty()){
+                        System.out.println("Histórico de transferências vazio.");
+                    } else {
+                        for (Transferencia obj : historico){
+                            System.out.println(obj);
+                        }
+                    }
+                }
+                break;
+
+        }
+    }
+
+    private void executarMenuRelatorios(){
+        System.out.println("\n--- INICIANDO RELATÓRIOS ---");
+        System.out.println("1 - Quantidade de veículos por marca");
+        System.out.println("2 - Veículos transferidos em determinado período");
+        System.out.println("3 - Veículos com placa antiga ainda não transferidos");
+        System.out.print("Digite uma opção: ");
+        int opcaoRelatorio = lerOpcao();
+
+        switch (opcaoRelatorio){
+            case 1:
+                exibirRelatorioVeiculosPorMarca();
+                break;
+            case 2:
+                exibirRelatorioVeiculosTransferidosPeriodo();
+                break;
+            case 3:
+                exibirRelatorioVeiculosPlacaAntiga();
+                break;
+            case 4:
+                System.out.println("Retornando ao Menu Principal...");
+                break;
+            default:
+                System.out.println("Opção de relatório inválida!");
+                break;
+        }
+    }
+
+    public void exibirRelatorioVeiculosPorMarca(){
+        System.out.println("\n--- RELATÓRIO: QUANTIDADE DE VEÍCULOS POR MARCA ---");
+        List<ContagemVeiculosPorMarca> relatorio = gerenciador.gerarRelatorioVeiculosPorMarca();
+
+        if (relatorio == null || relatorio.isEmpty()) {
+            System.out.println("Nenhum dado encontrado.");
+        } else {
+            System.out.println("-----------------------------------------");
+            System.out.printf("| %-25s | %-10s |\n", "MARCA", "QUANTIDADE");
+            System.out.println("-----------------------------------------");
+            for (ContagemVeiculosPorMarca item : relatorio) {
+                System.out.printf("| %-25s | %-10d |\n", item.getNomeMarca(), item.getQuantidade());
+            }
+            System.out.println("-----------------------------------------");
+        }
+    }
+
+    public void exibirRelatorioVeiculosTransferidosPeriodo(){
+        System.out.println("\n--- RELATÓRIO: VEÍCULOS TRANSFERIDOS POR PERÍODO ---");
+        System.out.print("Digite a data de INÍCIO do período (dd/MM/yyyy): ");
+        String dataInicioStr = sc.nextLine().trim();
+        System.out.print("Digite a data de FIM do período (dd/MM/yyyy): ");
+        String dataFimStr = sc.nextLine().trim();
+
+        List<Transferencia> relatorio = gerenciador.gerarRelatorioVeiculosTransferidosPeriodo(dataInicioStr, dataFimStr);
+
+        if (relatorio == null) {
+            // Mensagem de erro de data inválida já foi mostrada pelo Gerenciador
+            System.out.println("Não foi possível gerar o relatório devido a datas inválidas.");
+        } else if (relatorio.isEmpty()) {
+            System.out.println("Nenhuma transferência encontrada para o período de " + dataInicioStr + " a " + dataFimStr + ".");
+        } else {
+            System.out.println("\n--- Transferências de " + dataInicioStr + " a " + dataFimStr + " ---");
+            for (Transferencia t : relatorio) {
+                Veiculo v = t.getVeiculo();
+                System.out.println("--------------------------------------------------");
+                System.out.println("Data da Transferência: " + DataUtil.formatarData(t.getDataTransferencia()));
+                System.out.println("Veículo: " + (v != null ? v.getPlaca() : "N/A") +
+                        " (" + (v != null && v.getMarca() != null ? v.getMarca().getNome() : "") +
+                        " " + (v != null && v.getModelo() != null ? v.getModelo().getNome() : "") +
+                        ", Ano: " + (v != null ? v.getAno() : "") +
+                        ", Cor: " + (v != null ? v.getCor() : "") + ")");
+                System.out.println("Proprietário Anterior: " +
+                        (t.getAntigoProprietario() != null ? t.getAntigoProprietario().getNome() + " (CPF: " + t.getAntigoProprietario().getCpf() + ")" : "N/A"));
+                System.out.println("Novo Proprietário: " +
+                        (t.getNovoProprietario() != null ? t.getNovoProprietario().getNome() + " (CPF: " + t.getNovoProprietario().getCpf() + ")" : "N/A"));
+            }
+            System.out.println("--------------------------------------------------");
+            System.out.println("Total de transferências no período: " + relatorio.size());
+        }
+    }
+
+    public void exibirRelatorioVeiculosPlacaAntiga(){
+        System.out.println("\n--- RELATÓRIO: VEÍCULOS COM PLACA ANTIGA (AINDA NÃO TRANSFERIDOS/CONVERTIDOS) ---");
+        List<Veiculo> relatorio = gerenciador.gerarRelatorioVeiculosPlacaAntiga();
+
+        if (relatorio == null || relatorio.isEmpty()) {
+            System.out.println("Nenhum veículo com placa antiga encontrado ou ocorreu um erro na busca.");
+        } else {
+            System.out.println("-------------------------------------------------------------------------------");
+            System.out.printf("| %-8s | %-10s | %-10s | %-4s | %-10s | %-25s |\n",
+                    "PLACA", "MARCA", "MODELO", "ANO", "COR", "PROPRIETÁRIO ATUAL (CPF)");
+            System.out.println("-------------------------------------------------------------------------------");
+            for (Veiculo v : relatorio) {
+                String nomeMarca = (v.getMarca() != null ? v.getMarca().getNome() : "N/A");
+                String nomeModelo = (v.getModelo() != null ? v.getModelo().getNome() : "N/A");
+                String nomeProp = (v.getProprietarioAtual() != null ? v.getProprietarioAtual().getNome() + " ("+ v.getProprietarioAtual().getCpf() +")" : "N/A");
+
+                System.out.printf("| %-8s | %-10s | %-10s | %-4d | %-10s | %-25s |\n",
+                        v.getPlaca(), nomeMarca, nomeModelo, v.getAno(), v.getCor(), nomeProp);
+            }
+            System.out.println("------------------------------------------------------------------------------------");
+            System.out.println("Total de veículos com placa antiga: " + relatorio.size());
         }
     }
 
