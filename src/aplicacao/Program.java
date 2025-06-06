@@ -65,7 +65,7 @@ public class Program {
                 executarTransferenciaVeiculo();
                 break;
             case 3:
-                executarConsultaInformacoes();
+                executarMenuConsultaInformacoes();
                 break;
             case 4:
                 executarMenuRelatorios();
@@ -300,11 +300,12 @@ public class Program {
         }
     }
 
-    private void executarConsultaInformacoes(){
+    private void executarMenuConsultaInformacoes(){
         System.out.println("\n--- INICIANDO CONSULTA DE INFORMAÇÕES ---");
         System.out.println("1 - Consultar veículo por placa");
         System.out.println("2 - Consultar veículos por proprietário");
         System.out.println("3 - Consultar histórico de transferência de um veículo");
+        System.out.println("4 - Retornar ao menu principal");
         System.out.print("Digite a opção desejada: ");
         int n = sc.nextInt();
         sc.nextLine();
@@ -369,6 +370,12 @@ public class Program {
                 }
                 break;
 
+            case 4:
+                System.out.println("Retornando ao menu principal...");
+                break;
+            default:
+                System.out.println("Opção inválida!");
+                break;
         }
     }
 
@@ -377,6 +384,7 @@ public class Program {
         System.out.println("1 - Quantidade de veículos por marca");
         System.out.println("2 - Veículos transferidos em determinado período");
         System.out.println("3 - Veículos com placa antiga ainda não transferidos");
+        System.out.println("4 - Retornar ao menu principal");
         System.out.print("Digite uma opção: ");
         int opcaoRelatorio = lerOpcao();
 
