@@ -18,7 +18,7 @@ public class VeiculoDAO {
 
     public boolean salvar(Veiculo veiculo) {
         // Assumindo tabela veiculos com colunas: placa, id_marca, id_modelo, ano, cor, cpf_proprietario
-        String sql = "INSERT INTO veiculo (placa, idMarca, idModelo, ano, cor, proprietarioAtualCpf) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO veiculo (placa, idMarca, idModelo, ano, cor, proprietarioAtualCpf, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -28,13 +28,12 @@ public class VeiculoDAO {
             pstmt.setInt(4, veiculo.getAno());
             pstmt.setString(5, veiculo.getCor());
             pstmt.setString(6, veiculo.getProprietarioAtual().getCpf());
+            pstmt.setString(7, "ATIVO"); // NOVO: Definir o status padrão ao salvar
 
             pstmt.executeUpdate();
-            System.out.println("[VeiculoDAO] Veículo salvo com placa: " + veiculo.getPlaca());
             return true;
-
         } catch (SQLException e) {
-            System.err.println("[ERRO NO DAO - VeiculoDAO.salvar] Falha ao salvar veículo com placa '" + (veiculo != null ? veiculo.getPlaca() : "N/A") + "': " + e.getMessage());
+            System.err.println("[ERRO NO DAO - VeiculoDAO.salvar] Falha ao salvar veículo: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -44,15 +43,15 @@ public class VeiculoDAO {
         Veiculo veiculo = null;
         // A placaParametro já vem normalizada (maiúscula, sem hífen) do Gerenciador
 
-        String sql = "SELECT v.placa, v.ano, v.cor, " +
+        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " +  // <-- PONTO CRÍTICO AQUI
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
-                "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " + // Usando alias para clareza no getInt/getString
+                "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
                 "FROM veiculo v " +
                 "LEFT JOIN proprietario p ON v.proprietarioAtualCpf = p.cpf " +
                 "LEFT JOIN marca m ON v.IdMarca = m.idMarca " +
                 "LEFT JOIN modelo md ON v.IdModelo = md.idModelo " +
-                "WHERE UPPER(REPLACE(v.placa, '-', '')) = ?"; // MODIFICAÇÃO AQUI
+                "WHERE UPPER(REPLACE(v.placa, '-', '')) = ?";
 
         System.out.println("[VeiculoDAO] Buscando com placa normalizada: " + placaParametro); // Para depuração
 
@@ -92,11 +91,12 @@ public class VeiculoDAO {
 
                     // Criar Veiculo
                     veiculo = new Veiculo(
-                            rs.getString("placa"), // Pega a placa original do banco (com hífen, se tiver)
+                            rs.getString("placa"),
                             marca,
                             modelo,
                             rs.getInt("ano"),
                             rs.getString("cor"),
+                            rs.getString("status"), // NOVO: Passando o status
                             proprietarioAtual
                     );
                 } else {
@@ -140,37 +140,26 @@ public class VeiculoDAO {
     public List<Veiculo> buscarVeiculosPorCpf(String cpfInput){
         List<Veiculo> veiculosDoProprietario = new ArrayList<>();
 
-        String sql = "SELECT v.placa, v.ano, v.cor, " +
-                "       p.cpf AS prop_cpf, p.nome AS prop_nome, " + // Detalhes do proprietário (será o mesmo para todos os veículos nesta lista)
+        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " + // ADICIONADO v.status
+                "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
                 "FROM veiculo v " +
-                "INNER JOIN proprietario p ON v.proprietarioAtualCpf = p.cpf " + // INNER JOIN pois queremos veículos COM proprietário
+                "INNER JOIN proprietario p ON v.proprietarioAtualCpf = p.cpf " +
                 "LEFT JOIN marca m ON v.IdMarca = m.idMarca " +
                 "LEFT JOIN modelo md ON v.IdModelo = md.idModelo " +
-                "WHERE v.proprietarioAtualCpf = ?";
+                "WHERE v.proprietarioAtualCpf = ? AND v.status = 'ATIVO'";
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, cpfInput);
             try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { // Loop para pegar todos os veículos
-                    Marca marca = null;
-                    int marcaId = rs.getInt("marca_id");
-                    if (!rs.wasNull()) {
-                        marca = new Marca(marcaId, rs.getString("marca_nome"));
-                    }
+                while (rs.next()) {
+                    // ... (lógica para criar Marca e Modelo, que já deve estar correta) ...
+                    Marca marca = new Marca(rs.getInt("marca_id"), rs.getString("marca_nome"));
+                    Modelo modelo = new Modelo(rs.getInt("modelo_id"), rs.getString("modelo_nome"), marca);
 
-                    Modelo modelo = null;
-                    int modeloId = rs.getInt("modelo_id");
-                    if (!rs.wasNull()) {
-                        modelo = new Modelo(modeloId, rs.getString("modelo_nome"), marca);
-                    }
-
-                    // O proprietário será o mesmo para todos os veículos nesta consulta específica
-                    // Poderíamos criá-lo uma vez fora do loop se já o tivéssemos,
-                    // mas aqui estamos pegando do resultado do JOIN para cada veículo.
                     Proprietario proprietario = new Proprietario(rs.getString("prop_nome"), rs.getString("prop_cpf"));
 
                     Veiculo veiculo = new Veiculo(
@@ -179,7 +168,8 @@ public class VeiculoDAO {
                             modelo,
                             rs.getInt("ano"),
                             rs.getString("cor"),
-                            proprietario // Proprietário associado a este veículo
+                            rs.getString("status"),
+                            proprietario
                     );
                     veiculosDoProprietario.add(veiculo);
                 }
@@ -195,7 +185,8 @@ public class VeiculoDAO {
         List<ContagemVeiculosPorMarca> contagemPorMarca = new ArrayList<>();
         String sql = "SELECT m.nomeMarca, COUNT(v.placa) AS quantidade " +
                 "FROM veiculo v " +
-                "INNER JOIN marca m ON v.IdMarca = m.idMarca " + // Usa IdMarca de veiculo e idMarca de marca
+                "INNER JOIN marca m ON v.IdMarca = m.idMarca " +
+                "WHERE v.status = 'ATIVO' " +
                 "GROUP BY m.nomeMarca " +
                 "ORDER BY m.nomeMarca ASC"; // Ou ORDER BY quantidade DESC para ver as mais populares primeiro
         try (Connection conn = Conexao.getConnection();
@@ -221,9 +212,8 @@ public class VeiculoDAO {
         List<Veiculo> todosOsVeiculos = new ArrayList<>();
         List<Veiculo> veiculosComPlacaAntiga = new ArrayList<>();
 
-        // Query para buscar todos os veículos com seus detalhes
-        // (similar à buscarVeiculosPorCPFProprietario ou buscarPorPlaca, mas sem o WHERE específico inicial)
-        String sql = "SELECT v.placa, v.ano, v.cor, " +
+        // CORREÇÃO: Adicionado "v.status" ao SELECT
+        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " + // <-- ADICIONADO AQUI
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
@@ -231,24 +221,16 @@ public class VeiculoDAO {
                 "LEFT JOIN proprietario p ON v.proprietarioAtualCpf = p.cpf " +
                 "LEFT JOIN marca m ON v.IdMarca = m.idMarca " +
                 "LEFT JOIN modelo md ON v.IdModelo = md.idModelo " +
-                "ORDER BY v.placa ASC"; // Opcional: ordenar
+                "ORDER BY v.placa ASC";
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Marca marca = null;
-                int marcaId = rs.getInt("marca_id");
-                if (!rs.wasNull()) {
-                    marca = new Marca(marcaId, rs.getString("marca_nome"));
-                }
-
-                Modelo modelo = null;
-                int modeloId = rs.getInt("modelo_id");
-                if (!rs.wasNull()) {
-                    modelo = new Modelo(modeloId, rs.getString("modelo_nome"), marca);
-                }
+                // ... (criação de Marca, Modelo, Proprietario) ...
+                Marca marca = new Marca(rs.getInt("marca_id"), rs.getString("marca_nome"));
+                Modelo modelo = new Modelo(rs.getInt("modelo_id"), rs.getString("modelo_nome"), marca);
 
                 Proprietario proprietarioAtual = null;
                 String propCpf = rs.getString("prop_cpf");
@@ -256,21 +238,22 @@ public class VeiculoDAO {
                     proprietarioAtual = new Proprietario(rs.getString("prop_nome"), propCpf);
                 }
 
+                // CORREÇÃO: Passando o status para o construtor do Veiculo
                 Veiculo veiculo = new Veiculo(
-                        rs.getString("placa"), // Placa como está no banco
+                        rs.getString("placa"),
                         marca,
                         modelo,
                         rs.getInt("ano"),
                         rs.getString("cor"),
+                        rs.getString("status"), // <-- DADO DO STATUS SENDO USADO AQUI
                         proprietarioAtual
                 );
                 todosOsVeiculos.add(veiculo);
             }
 
-            // Agora, filtre a lista de todos os veículos para pegar apenas os com placa antiga
+            // Agora, o filtro que verifica o status vai funcionar corretamente
             for (Veiculo v : todosOsVeiculos) {
-                // Usar o PlacaUtil para verificar o formato da placa original do banco
-                if (PlacaUtil.ehPlacaAntiga(v.getPlaca())) { // (referenciando seu PlacaUtil)
+                if (PlacaUtil.ehPlacaAntiga(v.getPlaca()) && "ATIVO".equalsIgnoreCase(v.getStatus())) {
                     veiculosComPlacaAntiga.add(v);
                 }
             }
@@ -282,4 +265,20 @@ public class VeiculoDAO {
         return veiculosComPlacaAntiga;
     }
 
+    public boolean darBaixaVeiculo(String placaNormalizada) {
+        String sql = "UPDATE veiculo SET status = 'INATIVO', proprietarioAtualCpf = NULL WHERE UPPER(REPLACE(placa, '-', '')) = ?";
+
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, placaNormalizada);
+            int linhasAfetadas = pstmt.executeUpdate();
+            return linhasAfetadas > 0; // Se atualizou 1 linha, retorna true
+
+        } catch (SQLException e) {
+            System.err.println("[ERRO NO DAO - VeiculoDAO.darBaixaVeiculo] Falha ao dar baixa no veículo com placa normalizada '" + placaNormalizada + "': " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

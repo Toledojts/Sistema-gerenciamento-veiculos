@@ -95,7 +95,7 @@ public class Gerenciador {
         }
 
         // 5. Criar Objeto Veiculo
-        Veiculo novoVeiculo = new Veiculo(placa, marca, modelo, ano, cor.trim(), proprietario);
+        Veiculo novoVeiculo = new Veiculo(placa, marca, modelo, ano, cor.trim(), "ATIVO", proprietario);
         System.out.println("[Gerenciador] Objeto Veiculo pronto para salvar.");
 
         // 6. Salvar Veículo no Banco
@@ -317,6 +317,43 @@ public class Gerenciador {
     public List<Veiculo> gerarRelatorioVeiculosPlacaAntiga(){
         System.out.println("[Gerenciador] Gerando relatório de veículos com placa antiga...");
         return veiculoDAO.buscarVeiculosComPlacaAntiga();
+    }
+
+    public boolean darBaixaVeiculo(String placaInput){
+        System.out.println("\n[Gerenciador] Iniciando processo de baixa para a placa: " + placaInput);
+
+        // 1. Normalizar a placa para a busca no DAO
+        String placaNormalizada = placaInput != null ? placaInput.toUpperCase().replace("-", "") : null;
+        if (placaNormalizada == null || placaNormalizada.trim().isEmpty()) {
+            System.err.println("[Gerenciador] Placa não fornecida.");
+            return false;
+        }
+
+        // 2. Verificar se o veículo existe antes de tentar a baixa
+        Veiculo veiculo = veiculoDAO.buscarPorPlaca(placaNormalizada);
+        if (veiculo == null) {
+            System.err.println("[Gerenciador] Veículo com placa '" + placaNormalizada + "' não encontrado.");
+            return false;
+        }
+
+        // 3. Verificar se o veículo já está inativo
+        if ("INATIVO".equalsIgnoreCase(veiculo.getStatus())) {
+            System.err.println("[Gerenciador] O veículo com placa '" + veiculo.getPlaca() + "' já está baixado (inativo). Nenhuma ação foi tomada.");
+            return false; // Retorna false para indicar que nenhuma alteração foi feita
+        }
+
+        // 4. Se o veículo existe e está ativo, proceder com a baixa no DAO
+        System.out.println("[Gerenciador] Veículo encontrado e ativo. Prosseguindo com a baixa...");
+        boolean sucessoNaBaixa = veiculoDAO.darBaixaVeiculo(placaNormalizada);
+
+        if (sucessoNaBaixa) {
+            System.out.println("[Gerenciador] Baixa do veículo com placa '" + veiculo.getPlaca() + "' realizada com sucesso no banco de dados.");
+        } else {
+            // A mensagem de erro específica do SQL já terá sido impressa pelo DAO
+            System.err.println("[Gerenciador] Ocorreu uma falha no DAO ao tentar dar baixa no veículo.");
+        }
+
+        return sucessoNaBaixa;
     }
 
 }

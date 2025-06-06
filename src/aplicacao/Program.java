@@ -45,11 +45,11 @@ public class Program {
         int opcao = -1;
         while (opcao == -1) { // Loop até obter uma opção válida
             try {
-                opcao = sc.nextInt(); // Lê apenas o número
-                sc.nextLine(); // Consome a nova linha restante
+                opcao = sc.nextInt();
+                sc.nextLine();
             } catch (InputMismatchException e) {
                 System.out.println("Entrada inválida. Por favor, digite um número.");
-                sc.nextLine(); // Consome a entrada inválida (que não era número)
+                sc.nextLine();
                 opcao = -1; // Garante que o loop continue
             }
         }
@@ -71,7 +71,7 @@ public class Program {
                 executarMenuRelatorios();
                 break;
             case 5:
-                System.out.println("Baixa de veículos ainda não implementada");
+                executarBaixaVeiculo();
                 break;
             case 6:
                 System.out.println("Saindo...");
@@ -472,6 +472,25 @@ public class Program {
             }
             System.out.println("------------------------------------------------------------------------------------");
             System.out.println("Total de veículos com placa antiga: " + relatorio.size());
+        }
+    }
+
+    public void executarBaixaVeiculo(){
+        System.out.println("\n--- BAIXA DE VEÍCULO ---");
+
+        System.out.print("Digite a placa do veículo que deseja dar baixa: ");
+        String placaInput = sc.nextLine().trim();
+
+        // Chama o método do Gerenciador que contém toda a lógica
+        boolean sucesso = gerenciador.darBaixaVeiculo(placaInput);
+
+        // Fornece um feedback claro ao usuário com base no resultado
+        if (sucesso) {
+            System.out.println("\n--- VEÍCULO BAIXADO COM SUCESSO! ---");
+            System.out.println("O veículo com placa '" + placaInput.toUpperCase() + "' foi marcado como INATIVO e seu proprietário foi desvinculado.");
+        } else {
+            System.out.println("\n--- FALHA NA OPERAÇÃO DE BAIXA. ---");
+            System.out.println("Verifique se a placa está correta ou consulte as mensagens de erro acima.");
         }
     }
 

@@ -1,7 +1,6 @@
 package entidades;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class Veiculo {
     private String placa;
@@ -10,16 +9,17 @@ public class Veiculo {
     private String cor;
     private int ano;
     private String padraoPlaca;
+    private String status;
     private Proprietario proprietarioAtual;
-    List<Transferencia> historicoTransfer = new ArrayList<>();
 
-    public Veiculo (String placa, Marca marca, Modelo modelo, int ano, String cor, Proprietario proprietarioAtual) {
+    public Veiculo (String placa, Marca marca, Modelo modelo, int ano, String cor, String status, Proprietario proprietarioAtual) {
         this.placa = placa;
         this.marca = marca;
         this.modelo = modelo;
         this.ano = ano;
         this.cor = cor;
         this.proprietarioAtual = proprietarioAtual;
+        this.status = status;
     }
 
     public String getPlaca() {
@@ -70,22 +70,13 @@ public class Veiculo {
         this.proprietarioAtual = proprietarioAtual;
     }
 
-    public List<Transferencia> getHistoricoTransfer() {
-        return historicoTransfer;
+    public String getStatus() {
+        return status;
     }
 
-    public void setHistoricoTransfer(List<Transferencia> historicoTransfer) {
-        this.historicoTransfer = historicoTransfer;
+    public void setStatus(String status) {
+        this.status = status;
     }
-
-    public void transferirPropriedade(Proprietario novoProprietario){
-        proprietarioAtual = novoProprietario;
-    }
-
-    public void adicionarTransferencia(Transferencia transferencia){
-        historicoTransfer.add(transferencia);
-    }
-
 
     public String toString(){
         return marca + " " + modelo + " " + ano + ", cor " + cor + " - " + placa + "\n" + "Proprietário: " + proprietarioAtual;
