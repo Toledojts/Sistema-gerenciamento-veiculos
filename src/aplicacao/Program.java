@@ -86,15 +86,74 @@ public class Program {
 
     private void executarCadastroVeiculo() {
         System.out.println("\n--- INICIANDO CADASTRO DE VEÍCULO ---");
-        Marca marcaSelecionada = selecionarMarca();
-        if (marcaSelecionada == null) return; //Pequisar o que é
-        Modelo modeloSelecionado = selecionarModelo(marcaSelecionada);
-        if (modeloSelecionado == null) return;
+        System.out.println("1 - Novo Emplacamento (Gerar Placa Automática)");
+        System.out.println("2 - Cadastrar Veículo com Placa Existente");
+        System.out.println("3 - Voltar ao Menu Principal");
+        System.out.print("Escolha uma opção: ");
+
+        int opcao = lerOpcao();
+
+
+        switch (opcao) {
+            case 1:
+                executarNovoEmplacamento();
+                break;
+            case 2:
+                executarCadastroPlacaExistente();
+                break;
+            case 3:
+                System.out.println("Retornando ao Menu Principal...");
+                return; // Sai do método e volta ao menu principal
+            default:
+                System.out.println("Opção inválida.");
+                break;
+        }
+    }
+
+    private void executarCadastroPlacaExistente(){
+        System.out.println("\n--- CADASTRO DE VEÍCULO COM PLACA EXISTENTE ---");
+
         String placa = obterPlacaValida();
-        if (gerenciador.verificarPlacaExistente(placa)){
-            System.out.println("[Program] ERRO: Placa já cadastrada. Operação cancelada.");
+
+        // Reutiliza sua verificação de placa existente
+        if (gerenciador.verificarPlacaExistente(placa)) {
+            System.out.println("[ERRO] A placa '" + placa.toUpperCase() + "' já está cadastrada no sistema. Cadastro cancelado.");
             return;
         }
+
+        // --- O RESTO DESTE MÉTODO É O SEU CÓDIGO DE CADASTRO ORIGINAL ---
+        // Coleta de dados: marca, modelo, ano, cor, proprietário...
+        Marca marcaSelecionada = selecionarMarca();
+        if (marcaSelecionada == null) return;
+
+        Modelo modeloSelecionado = selecionarModelo(marcaSelecionada);
+        if (modeloSelecionado == null) return;
+
+        int ano = obterAnoValido();
+        String cor = obterCorValida();
+        String cpf = obterCPFValido();
+        String nome = obterNomeProprietarioSeNecessario(cpf); // Este método já busca ou pede o nome
+        if (nome == null) return;
+
+        // Chama o método original do Gerenciador
+        boolean sucesso = gerenciador.cadastrarVeiculo(placa, marcaSelecionada, modeloSelecionado, ano, cor, cpf, nome);
+
+        if (sucesso) {
+            System.out.println("\n--- CADASTRO REALIZADO COM SUCESSO! ---");
+        } else {
+            System.out.println("\n--- FALHA NO CADASTRO. Verifique os erros e tente novamente. ---");
+        }
+    }
+
+    private void executarNovoEmplacamento(){
+        System.out.println("\n--- NOVO EMPLACAMENTO ---");
+
+        // Coleta todos os dados, EXCETO a placa
+        Marca marcaSelecionada = selecionarMarca();
+        if (marcaSelecionada == null) return;
+
+        Modelo modeloSelecionado = selecionarModelo(marcaSelecionada);
+        if (modeloSelecionado == null) return;
 
         int ano = obterAnoValido();
         String cor = obterCorValida();
@@ -102,11 +161,14 @@ public class Program {
         String nome = obterNomeProprietarioSeNecessario(cpf);
         if (nome == null) return;
 
-        boolean sucesso = gerenciador.cadastrarVeiculo(placa, marcaSelecionada, modeloSelecionado, ano, cor, cpf, nome);
+        // Chama o NOVO método sobrecarregado do Gerenciador (sem a placa)
+        boolean sucesso = gerenciador.cadastrarVeiculo(marcaSelecionada, modeloSelecionado, ano, cor, cpf, nome);
+
         if (sucesso) {
-            System.out.println("\n--- CADASTRO REALIZADO COM SUCESSO! ---");
+            System.out.println("\n--- NOVO EMPLACAMENTO REALIZADO COM SUCESSO! ---");
+            System.out.println("Uma nova placa foi gerada e associada ao veículo.");
         } else {
-            System.out.println("\n--- FALHA NO CADASTRO. Verifique os erros e tente novamente. ---");
+            System.out.println("\n--- FALHA NO NOVO EMPLACAMENTO. Verifique os erros e tente novamente. ---");
         }
     }
 
@@ -512,6 +574,9 @@ public class Program {
 
         // 2. Criar o Gerenciador com os DAOs
         Gerenciador gerenciador = new Gerenciador(marcaDAO, modeloDAO, proprietarioDAO, veiculoDAO, transferenciaDAO);
+
+        System.out.println("--- Iniciando Sistema de Gerenciamento de Veículos ---");
+        gerenciador.carregarDadosIniciais();
 
         // 3. Criar a instância da Aplicação (Program)
         Program app = new Program(gerenciador);

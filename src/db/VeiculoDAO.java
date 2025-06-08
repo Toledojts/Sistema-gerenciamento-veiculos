@@ -43,7 +43,8 @@ public class VeiculoDAO {
         Veiculo veiculo = null;
         // A placaParametro já vem normalizada (maiúscula, sem hífen) do Gerenciador
 
-        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " +  // <-- PONTO CRÍTICO AQUI
+        String sql =
+                "SELECT v.placa, v.ano, v.cor, v.status, " +
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
@@ -140,7 +141,8 @@ public class VeiculoDAO {
     public List<Veiculo> buscarVeiculosPorCpf(String cpfInput){
         List<Veiculo> veiculosDoProprietario = new ArrayList<>();
 
-        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " + // ADICIONADO v.status
+        String sql =
+                "SELECT v.placa, v.ano, v.cor, v.status, " +
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
@@ -183,7 +185,8 @@ public class VeiculoDAO {
 
     public List<ContagemVeiculosPorMarca> contarVeiculosPorMarca(){
         List<ContagemVeiculosPorMarca> contagemPorMarca = new ArrayList<>();
-        String sql = "SELECT m.nomeMarca, COUNT(v.placa) AS quantidade " +
+        String sql =
+                "SELECT m.nomeMarca, COUNT(v.placa) AS quantidade " +
                 "FROM veiculo v " +
                 "INNER JOIN marca m ON v.IdMarca = m.idMarca " +
                 "WHERE v.status = 'ATIVO' " +
@@ -213,7 +216,8 @@ public class VeiculoDAO {
         List<Veiculo> veiculosComPlacaAntiga = new ArrayList<>();
 
         // CORREÇÃO: Adicionado "v.status" ao SELECT
-        String sql = "SELECT v.placa, v.ano, v.cor, v.status, " + // <-- ADICIONADO AQUI
+        String sql =
+                "SELECT v.placa, v.ano, v.cor, v.status, " + // <-- ADICIONADO AQUI
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +

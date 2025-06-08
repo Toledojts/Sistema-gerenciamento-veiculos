@@ -37,4 +37,20 @@ public class MarcaDAO {
         }
         return marcas;
     }
+
+    public long contar(){
+        long count = 0;
+        String sql = "SELECT COUNT(*) FROM marca";
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                count = rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("[ERRO NO DAO - MarcaDAO.contar] Falha ao contar marcas: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

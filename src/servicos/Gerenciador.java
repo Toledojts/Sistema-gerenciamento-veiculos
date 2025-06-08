@@ -4,8 +4,11 @@ import db.*;
 import entidades.*;
 import relatorios.ContagemVeiculosPorMarca;
 import utilitarios.DataUtil;
+import utilitarios.GeradorPlacaUtil;
 import utilitarios.PlacaUtil;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -18,7 +21,6 @@ public class Gerenciador {
     private final VeiculoDAO veiculoDAO;
     private final TransferenciaDAO transferenciaDAO;
 
-    // Construtor para injeção dos DAOs
     public Gerenciador(MarcaDAO marcaDAO, ModeloDAO modeloDAO, ProprietarioDAO proprietarioDAO, VeiculoDAO veiculoDAO, TransferenciaDAO transferenciaDAO) {
         this.marcaDAO = marcaDAO;
         this.modeloDAO = modeloDAO;
@@ -27,7 +29,6 @@ public class Gerenciador {
         this.transferenciaDAO = transferenciaDAO;
     }
 
-    // Métodos para obter listas para a camada de aplicação
     public List<Marca> listarMarcasDisponiveis() {
         return marcaDAO.listarTodas();
     }
@@ -36,7 +37,21 @@ public class Gerenciador {
         return modeloDAO.listarPorMarca(marca);
     }
 
-    // Método principal de cadastro
+    public void carregarDadosIniciais(){
+        if (marcaDAO.contar() == 0) {
+            System.out.println("[Gerenciador] Banco de dados parece estar vazio. Iniciando carga de dados iniciais.");
+            try (Connection conn = Conexao.getConnection()) {
+                CargaInicialDados.popularBanco(conn);
+            } catch (SQLException e) {
+                System.err.println("[Gerenciador] Falha ao obter conexão para carga inicial de dados: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("[Gerenciador] Banco de dados já populado. Nenhuma carga inicial necessária.");
+        }
+    }
+
+    //metodo para cadastro com placa
     public boolean cadastrarVeiculo(String placaInput, Marca marca, Modelo modelo, int ano, String cor, String cpfProprietarioInput, String nomeProprietarioInput) {
         System.out.println("\n[Gerenciador] Iniciando processo de cadastro...");
 
@@ -107,6 +122,23 @@ public class Gerenciador {
         }
         System.out.println("[Gerenciador] Cadastro concluído com sucesso para placa: " + placa);
         return true; // Indica sucesso
+    }
+
+    //metodo para cadastro sem placa
+    public boolean cadastrarVeiculo(Marca marca, Modelo modelo, int ano, String cor, String cpfProprietarioInput, String nomeProprietarioInput){
+        System.out.println("[Gerenciador] Iniciando processo de novo emplacamento...");
+
+        String novaPlaca;
+        do {
+            // CHAMANDO O NOVO GERADOR
+            novaPlaca = GeradorPlacaUtil.gerarPlacaMercosul();
+            System.out.println("[Gerenciador] Tentativa de placa gerada: " + novaPlaca);
+        } while (verificarPlacaExistente(novaPlaca));
+
+        System.out.println("[Gerenciador] Placa única '" + novaPlaca + "' gerada e validada.");
+
+        // Chama o método de cadastro original com a placa gerada
+        return cadastrarVeiculo(novaPlaca, marca, modelo, ano, cor, cpfProprietarioInput, nomeProprietarioInput);
     }
 
     public boolean verificarPlacaExistente(String placaInput){

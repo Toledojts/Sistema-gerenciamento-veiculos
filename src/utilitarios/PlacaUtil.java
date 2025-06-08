@@ -37,9 +37,6 @@ public class PlacaUtil {
      * (que é o 2º dígito numérico) para uma letra correspondente (0=A, 1=B, ..., 9=J).
      * Se a placa já estiver no formato Mercosul ou não for um formato antigo válido,
      * retorna a placa original.
-     *
-     * @param placaAntiga A placa no formato antigo.
-     * @return A placa convertida para o padrão Mercosul ou a placa original se não aplicável.
      */
 
     public static String converterPlacaAntigaParaMercosul(String placaAntiga) {
