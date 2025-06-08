@@ -281,8 +281,8 @@ public class Program {
     }
 
     private String obterNomeProprietarioSeNecessario(String cpf) {
-        ProprietarioDAO propDAO = new ProprietarioDAO(); // Idealmente injetado no construtor do Program
-        Proprietario existente = propDAO.buscarPorCPF(cpf);
+        Proprietario existente = gerenciador.buscarProprietarioPorCPF(cpf);
+
         if (existente != null) {
             System.out.println("Proprietário encontrado: " + existente.getNome());
             return existente.getNome();

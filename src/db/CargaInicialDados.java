@@ -14,11 +14,16 @@ public class CargaInicialDados {
             conn.setAutoCommit(false);
 
             // 1. INSERIR MARCAS (sem dependências)
-            stmt.addBatch("INSERT INTO marca (idMarca, nomeMarca) VALUES (1, 'Chevrolet'), (2, 'Ford'), (3, 'Fiat');");
+            stmt.addBatch("INSERT INTO marca (idMarca, nomeMarca) VALUES (1, 'Chevrolet'), (2, 'Volkswagen'), (3, 'Fiat');");
             System.out.println("[Carga Inicial] Inserindo marcas...");
 
             // 2. INSERIR MODELOS (dependem de Marca)
-            stmt.addBatch("INSERT INTO modelo (idModelo, nomeModelo, idMarca) VALUES (1, 'Onix', 1), (2, 'Celta', 1), (3, 'Ka', 2), (4, 'Fiesta', 2), (5, 'Uno', 3), (6, 'Mobi', 3);");
+            stmt.addBatch(
+                    "INSERT INTO modelo (idModelo, nomeModelo, idMarca) " +
+                            "VALUES (1, 'Onix', 1), (2, 'Celta', 1), (3, 'Corsa', 1), " +
+                            "(4, 'Gol', 2), (5, 'Saveiro', 2), (6, 'Polo', 2), " +
+                            "(7, 'Uno', 3), (8, 'Mobi', 3), (9, 'Argo', 3);");
+
             System.out.println("[Carga Inicial] Inserindo modelos...");
 
             // 3. INSERIR PROPRIETÁRIOS (sem dependências)
@@ -26,10 +31,17 @@ public class CargaInicialDados {
             System.out.println("[Carga Inicial] Inserindo proprietários...");
 
             // 4. INSERIR VEÍCULOS (dependem de Marca, Modelo, Proprietario)
-            // Lembre-se que a coluna 'status' agora existe e tem 'ATIVO' como padrão, então não precisamos especificá-la aqui.
-            stmt.addBatch("INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) VALUES ('ABC-1234', 2020, 'Branco', '11122233344', 1, 2);");
-            stmt.addBatch("INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) VALUES ('XYZ-5678', 2021, 'Preto', '55566677788', 2, 3);");
-            stmt.addBatch("INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) VALUES ('QWE-9101', 2022, 'Prata', '11122233344', 3, 5);");
+            //Coluna status tem ATIVO como padrao - não é necessário inserir status
+            stmt.addBatch(
+                    "INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
+                            "VALUES " + "('ABC-1234', 2020, 'Branco', '11122233344', 1, 2);");
+            stmt.addBatch(
+                    "INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
+                            "VALUES " + "('XYZ-5678', 2021, 'Preto', '55566677788', 2, 3);");
+
+            stmt.addBatch("INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
+                    "VALUES ('QWE-9101', 2022, 'Prata', '11122233344', 3, 5);");
+
             System.out.println("[Carga Inicial] Inserindo veículos...");
 
             // Executar todos os comandos em lote

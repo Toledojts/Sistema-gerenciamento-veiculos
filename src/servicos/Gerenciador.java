@@ -161,7 +161,6 @@ public class Gerenciador {
         Pattern padraoMercosul = Pattern.compile("^[A-Z]{3}\\d[A-Z]\\d{2}$", Pattern.CASE_INSENSITIVE);
 
         boolean valido = padraoAntigo.matcher(placa).matches() || padraoMercosul.matcher(placa).matches();
-        System.out.printf("[Gerenciador] Validando placa %s: %s%n", placa, (valido ? "Válido" : "Inválido"));
         return valido;
     }
 

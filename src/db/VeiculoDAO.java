@@ -17,8 +17,9 @@ import java.util.List;
 public class VeiculoDAO {
 
     public boolean salvar(Veiculo veiculo) {
-        // Assumindo tabela veiculos com colunas: placa, id_marca, id_modelo, ano, cor, cpf_proprietario
-        String sql = "INSERT INTO veiculo (placa, idMarca, idModelo, ano, cor, proprietarioAtualCpf, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO veiculo (placa, idMarca, idModelo, ano, cor, proprietarioAtualCpf, status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -127,12 +128,14 @@ public class VeiculoDAO {
                 System.out.println("[VeiculoDAO] Veículo atualizado com sucesso. Nova placa: " + placaNova + ", Novo CPF: " + cpfNovoProprietario);
                 return true;
             } else {
-                System.out.println("[VeiculoDAO] Nenhuma linha atualizada para placa original (normalizada): " + placaOriginalParam + ". Veículo não encontrado ou dados já eram os mesmos.");
+                System.out.println("[VeiculoDAO] Nenhuma linha atualizada para placa original (normalizada): " + placaOriginalParam +
+                        ". Veículo não encontrado ou dados já eram os mesmos.");
                 return false;
             }
 
         } catch (SQLException e) {
-            System.err.println("[ERRO NO DAO - VeiculoDAO.atualizarVeiculoParaTransferencia] Falha ao atualizar veículo (placa original normalizada: '" + placaOriginalParam + "'): " + e.getMessage());
+            System.err.println("[ERRO NO DAO - VeiculoDAO.atualizarVeiculoParaTransferencia] Falha ao atualizar veículo (placa original normalizada: '" +
+                    placaOriginalParam + "'): " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -185,13 +188,13 @@ public class VeiculoDAO {
 
     public List<ContagemVeiculosPorMarca> contarVeiculosPorMarca(){
         List<ContagemVeiculosPorMarca> contagemPorMarca = new ArrayList<>();
-        String sql =
-                "SELECT m.nomeMarca, COUNT(v.placa) AS quantidade " +
-                "FROM veiculo v " +
-                "INNER JOIN marca m ON v.IdMarca = m.idMarca " +
-                "WHERE v.status = 'ATIVO' " +
+
+        String sql = "SELECT m.nomeMarca, COUNT(v.placa) AS quantidade " +
+                "FROM marca m " +
+                "LEFT JOIN veiculo v ON m.idMarca = v.IdMarca AND v.status = 'ATIVO' " +
                 "GROUP BY m.nomeMarca " +
-                "ORDER BY m.nomeMarca ASC"; // Ou ORDER BY quantidade DESC para ver as mais populares primeiro
+                "ORDER BY m.nomeMarca ASC";
+
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -205,8 +208,6 @@ public class VeiculoDAO {
         } catch (SQLException e) {
             System.err.println("[ERRO NO DAO - VeiculoDAO.contarVeiculosPorMarca] Falha ao contar veículos por marca: " + e.getMessage());
             e.printStackTrace();
-            // Retorna lista vazia em caso de erro para este tipo de relatório,
-            // ou poderia lançar uma exceção para o Gerenciador tratar.
         }
         return contagemPorMarca;
     }
@@ -280,7 +281,8 @@ public class VeiculoDAO {
             return linhasAfetadas > 0; // Se atualizou 1 linha, retorna true
 
         } catch (SQLException e) {
-            System.err.println("[ERRO NO DAO - VeiculoDAO.darBaixaVeiculo] Falha ao dar baixa no veículo com placa normalizada '" + placaNormalizada + "': " + e.getMessage());
+            System.err.println("[ERRO NO DAO - VeiculoDAO.darBaixaVeiculo] Falha ao dar baixa no veículo com placa normalizada '" +
+                    placaNormalizada + "': " + e.getMessage());
             e.printStackTrace();
             return false;
         }

@@ -8,7 +8,6 @@ public class Veiculo {
     private Modelo modelo;
     private String cor;
     private int ano;
-    private String padraoPlaca;
     private String status;
     private Proprietario proprietarioAtual;
 
@@ -52,14 +51,6 @@ public class Veiculo {
 
     public void setAno(int ano) {
         this.ano = ano;
-    }
-
-    public String getPadraoPlaca() {
-        return padraoPlaca;
-    }
-
-    public void setPadraoPlaca(String padraoPlaca) {
-        this.padraoPlaca = padraoPlaca;
     }
 
     public Proprietario getProprietarioAtual() {

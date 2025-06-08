@@ -43,9 +43,9 @@ public class TransferenciaDAO {
     public List<Transferencia> buscarTransferenciasPorPlaca(String placaInput){
         List<Transferencia> historico = new ArrayList<>();
         // Adicionado "v.status AS veiculo_status" ao SELECT
-        String sql = "SELECT " +
-                "t.dataTransferencia, " +
-                "v.placa AS veiculo_placa, v.status AS veiculo_status, " + // ADICIONADO v.status
+        String sql =
+                "SELECT " + "t.dataTransferencia, " +
+                "v.placa AS veiculo_placa, v.status AS veiculo_status, " +
                 "marca_v.nomeMarca AS veiculo_marca_nome, " +
                 "modelo_v.nomeModelo AS veiculo_modelo_nome, " +
                 "pa.cpf AS ant_prop_cpf, pa.nome AS ant_prop_nome, " +
