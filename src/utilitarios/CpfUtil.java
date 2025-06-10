@@ -4,26 +4,26 @@ import java.util.InputMismatchException;
 
 public class CpfUtil {
     public static boolean validar(String cpf) {
-        // 1. Limpa a formatação (pontos e hífen) e verifica se o CPF é nulo ou vazio
+        // Limpa a formatação (pontos e hífen) e verifica se o CPF é nulo ou vazio
         String cpfLimpo = cpf != null ? cpf.replaceAll("[.\\-]", "") : null;
 
         if (cpfLimpo == null || cpfLimpo.length() != 11) {
             return false;
         }
 
-        // 2. Verifica se todos os dígitos são iguais (ex: 111.111.111-11), o que é inválido.
+        // Verifica se todos os dígitos são iguais (ex: 111.111.111-11), o que é inválido.
         if (cpfLimpo.matches("(\\d)\\1{10}")) {
             return false;
         }
 
         try {
-            // 3. Cálculo do primeiro dígito verificador
+            // Cálculo do primeiro dígito verificador
             char dig10 = calcularDigitoVerificador(cpfLimpo.substring(0, 9));
 
-            // 4. Cálculo do segundo dígito verificador
+            // Cálculo do segundo dígito verificador
             char dig11 = calcularDigitoVerificador(cpfLimpo.substring(0, 9) + dig10);
 
-            // 5. Verifica se os dígitos calculados são iguais aos dígitos do CPF informado
+            // Verifica se os dígitos calculados são iguais aos dígitos do CPF informado
             return (dig10 == cpfLimpo.charAt(9)) && (dig11 == cpfLimpo.charAt(10));
 
         } catch (InputMismatchException e) {

@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModeloDAO {
-    // Método para buscar modelos de uma marca específica
+    // Metodo para buscar modelos de uma marca específica
     public List<Modelo> listarPorMarca(Marca marca) {
         List<Modelo> modelos = new ArrayList<>();
-        // Use nomes exatos das suas colunas (ex: id_modelo, nome_modelo, id_marca)
         String sql = "SELECT idModelo, nomeModelo FROM modelo WHERE idMarca = ? ORDER BY idModelo ASC";
 
         if (marca == null) {
@@ -22,7 +21,6 @@ public class ModeloDAO {
             return modelos; // Retorna lista vazia
         }
 
-        // try-with-resources
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

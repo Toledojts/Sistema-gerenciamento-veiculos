@@ -8,7 +8,7 @@ public class GeradorPlacaUtil {
     /**
      * Gera uma placa aleatória no padrão Mercosul (formato LLLNLNN).
      * Exemplo de placa gerada: BRA1A23
-     * @return Uma String representando a placa gerada.
+     * retorna Uma String representando a placa gerada.
      */
     public static String gerarPlacaMercosul() {
         StringBuilder sb = new StringBuilder();

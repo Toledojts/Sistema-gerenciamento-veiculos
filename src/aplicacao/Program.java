@@ -115,7 +115,7 @@ public class Program {
 
         String placa = obterPlacaValida();
 
-        // Reutiliza sua verificação de placa existente
+        // Reutiliza verificação de placa existente
         if (gerenciador.verificarPlacaExistente(placa)) {
             System.out.println("[ERRO] A placa '" + placa.toUpperCase() + "' já está cadastrada no sistema. Cadastro cancelado.");
             return;
@@ -209,16 +209,16 @@ public class Program {
             System.out.print("Opção Modelo (número): ");
             try {
                 int escolha = sc.nextInt(); // 1. Lê APENAS o número
-                sc.nextLine(); // 2. <<< ADICIONE ESTA LINHA para consumir o '\n' restante
+                sc.nextLine();
 
                 if (escolha > 0 && escolha <= modelos.size()) {
                     return modelos.get(escolha - 1);
                 } else {
                     System.out.println("Opção inválida.");
                 }
-            } catch (java.util.InputMismatchException e) { // 3. Use InputMismatchException para nextInt()
+            } catch (java.util.InputMismatchException e) {
                 System.out.println("Entrada inválida. Digite um número.");
-                sc.nextLine(); // 4. Consome a entrada inválida (que não era número)
+                sc.nextLine();
             }
         }
     }
@@ -345,7 +345,6 @@ public class Program {
         // Agora, ao chamar o método principal de transferência no Gerenciador,
         // ele ainda fará suas próprias validações e busca do veículo para garantir
         // a consistência dos dados no momento da transação.
-        // Passaremos a placa original que o usuário digitou.
         boolean sucesso = gerenciador.transferirPropriedade(
                 placaVeiculoInput, // Passa a placa que o usuário digitou
                 cpfNovoProprietario,
@@ -564,26 +563,26 @@ public class Program {
     }
 
     public static void main(String[] args) {
-        // 1. Configurar os DAOs
+        // Configura os DAOs
         MarcaDAO marcaDAO = new MarcaDAO();
         ModeloDAO modeloDAO = new ModeloDAO();
         ProprietarioDAO proprietarioDAO = new ProprietarioDAO();
         VeiculoDAO veiculoDAO = new VeiculoDAO();
         TransferenciaDAO transferenciaDAO = new TransferenciaDAO();
 
-        // 2. Criar o Gerenciador com os DAOs
+        // Cria o Gerenciador com os DAOs
         Gerenciador gerenciador = new Gerenciador(marcaDAO, modeloDAO, proprietarioDAO, veiculoDAO, transferenciaDAO);
 
         System.out.println("--- Iniciando Sistema de Gerenciamento de Veículos ---");
         gerenciador.carregarDadosIniciais();
 
-        // 3. Criar a instância da Aplicação (Program)
+        // Cria a instância da Aplicação (Program)
         Program app = new Program(gerenciador);
 
-        // 4. Executar o menu principal
+        // Executa o menu principal
         app.executarMenu();
 
-        // Fechar o scanner ao final da aplicação
+        // Fecha o scanner ao final da aplicação
         sc.close();
         System.out.println("\nAplicação finalizada.");
     }

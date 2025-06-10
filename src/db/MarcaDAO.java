@@ -12,7 +12,6 @@ import java.util.List;
 public class MarcaDAO {
     public List<Marca> listarTodas() {
         List<Marca> marcas = new ArrayList<>();
-        // Use nomes exatos das suas colunas (ex: id_marca, nome_marca)
         String sql = "SELECT idMarca, nomeMarca FROM marca ORDER BY idMarca ASC"; // Assumindo tabela 'marcas'
 
         // try-with-resources garante que a conexão, statement e resultset sejam fechados
@@ -32,7 +31,6 @@ public class MarcaDAO {
 
         } catch (SQLException e) {
             System.err.println("Erro ao listar marcas: " + e.getMessage());
-            // Em uma aplicação real, logar o erro e talvez lançar uma exceção personalizada
             e.printStackTrace(); // Imprime o stack trace para depuração
         }
         return marcas;

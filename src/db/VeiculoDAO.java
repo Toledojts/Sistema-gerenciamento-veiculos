@@ -29,7 +29,7 @@ public class VeiculoDAO {
             pstmt.setInt(4, veiculo.getAno());
             pstmt.setString(5, veiculo.getCor());
             pstmt.setString(6, veiculo.getProprietarioAtual().getCpf());
-            pstmt.setString(7, "ATIVO"); // NOVO: Definir o status padrão ao salvar
+            pstmt.setString(7, "ATIVO");
 
             pstmt.executeUpdate();
             return true;
@@ -77,21 +77,17 @@ public class VeiculoDAO {
                     Modelo modelo = null;
                     int modeloId = rs.getInt("modelo_id"); // Usa o alias
                     if (!rs.wasNull()) {
-                        // Assumindo que a marca do modelo é a mesma marca associada diretamente ao veículo
-                        // Se a entidade Modelo espera um objeto Marca que deve ser construído com base
-                        // em um md.idMarca diferente (se existisse), a lógica seria mais complexa aqui.
-                        // Mas com a estrutura atual, a marca já obtida deve ser a correta para o modelo.
                         modelo = new Modelo(modeloId, rs.getString("modelo_nome"), marca);
                     }
 
-                    // Criar ProprietarioAtual
+                    // Cria ProprietarioAtual
                     Proprietario proprietarioAtual = null;
                     String propCpf = rs.getString("prop_cpf"); // Usa o alias
                     if (propCpf != null) {
                         proprietarioAtual = new Proprietario(rs.getString("prop_nome"), propCpf);
                     }
 
-                    // Criar Veiculo
+                    // Cria Veiculo
                     veiculo = new Veiculo(
                             rs.getString("placa"),
                             marca,
@@ -161,7 +157,6 @@ public class VeiculoDAO {
             pstmt.setString(1, cpfInput);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    // ... (lógica para criar Marca e Modelo, que já deve estar correta) ...
                     Marca marca = new Marca(rs.getInt("marca_id"), rs.getString("marca_nome"));
                     Modelo modelo = new Modelo(rs.getInt("modelo_id"), rs.getString("modelo_nome"), marca);
 
@@ -216,9 +211,8 @@ public class VeiculoDAO {
         List<Veiculo> todosOsVeiculos = new ArrayList<>();
         List<Veiculo> veiculosComPlacaAntiga = new ArrayList<>();
 
-        // CORREÇÃO: Adicionado "v.status" ao SELECT
         String sql =
-                "SELECT v.placa, v.ano, v.cor, v.status, " + // <-- ADICIONADO AQUI
+                "SELECT v.placa, v.ano, v.cor, v.status, " +
                 "       p.cpf AS prop_cpf, p.nome AS prop_nome, " +
                 "       m.idMarca AS marca_id, m.nomeMarca AS marca_nome, " +
                 "       md.idModelo AS modelo_id, md.nomeModelo AS modelo_nome " +
@@ -243,20 +237,18 @@ public class VeiculoDAO {
                     proprietarioAtual = new Proprietario(rs.getString("prop_nome"), propCpf);
                 }
 
-                // CORREÇÃO: Passando o status para o construtor do Veiculo
                 Veiculo veiculo = new Veiculo(
                         rs.getString("placa"),
                         marca,
                         modelo,
                         rs.getInt("ano"),
                         rs.getString("cor"),
-                        rs.getString("status"), // <-- DADO DO STATUS SENDO USADO AQUI
+                        rs.getString("status"),
                         proprietarioAtual
                 );
                 todosOsVeiculos.add(veiculo);
             }
 
-            // Agora, o filtro que verifica o status vai funcionar corretamente
             for (Veiculo v : todosOsVeiculos) {
                 if (PlacaUtil.ehPlacaAntiga(v.getPlaca()) && "ATIVO".equalsIgnoreCase(v.getStatus())) {
                     veiculosComPlacaAntiga.add(v);
@@ -278,7 +270,7 @@ public class VeiculoDAO {
 
             pstmt.setString(1, placaNormalizada);
             int linhasAfetadas = pstmt.executeUpdate();
-            return linhasAfetadas > 0; // Se atualizou 1 linha, retorna true
+            return linhasAfetadas > 0;
 
         } catch (SQLException e) {
             System.err.println("[ERRO NO DAO - VeiculoDAO.darBaixaVeiculo] Falha ao dar baixa no veículo com placa normalizada '" +

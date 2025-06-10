@@ -13,11 +13,11 @@ public class CargaInicialDados {
             // Desabilitar auto-commit para tratar como uma única transação
             conn.setAutoCommit(false);
 
-            // 1. INSERIR MARCAS (sem dependências)
+            //  INSERIR MARCAS (sem dependências)
             stmt.addBatch("INSERT INTO marca (idMarca, nomeMarca) VALUES (1, 'Chevrolet'), (2, 'Volkswagen'), (3, 'Fiat');");
             System.out.println("[Carga Inicial] Inserindo marcas...");
 
-            // 2. INSERIR MODELOS (dependem de Marca)
+            // INSERIR MODELOS (dependem de Marca)
             stmt.addBatch(
                     "INSERT INTO modelo (idModelo, nomeModelo, idMarca) " +
                             "VALUES (1, 'Onix', 1), (2, 'Celta', 1), (3, 'Corsa', 1), " +
@@ -26,11 +26,11 @@ public class CargaInicialDados {
 
             System.out.println("[Carga Inicial] Inserindo modelos...");
 
-            // 3. INSERIR PROPRIETÁRIOS (sem dependências)
+            // INSERIR PROPRIETÁRIOS (sem dependências)
             stmt.addBatch("INSERT INTO proprietario (cpf, nome) VALUES ('27665173080', 'Ana Silva'), ('12453567047', 'Carlos Souza');");
             System.out.println("[Carga Inicial] Inserindo proprietários...");
 
-            // 4. INSERIR VEÍCULOS (dependem de Marca, Modelo, Proprietario)
+            // INSERIR VEÍCULOS (dependem de Marca, Modelo, Proprietario)
             //Coluna status tem ATIVO como padrao - não é necessário inserir status
             stmt.addBatch(
                     "INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
@@ -44,7 +44,7 @@ public class CargaInicialDados {
 
             System.out.println("[Carga Inicial] Inserindo veículos...");
 
-            // Executar todos os comandos em lote
+            // Executa todos os comandos em lote
             stmt.executeBatch();
 
             // Se tudo deu certo, comitar a transação

@@ -11,17 +11,14 @@ public class Conexao {
 
     static {
         try {
-            // Certifique-se de que o driver JDBC do MySQL (mysql-connector-java) está no classpath
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.err.println("Erro: Driver JDBC do MySQL não encontrado! Verifique o classpath.");
-            // Em uma aplicação real, tratar isso de forma mais robusta (lançar exceção, logar)
             throw new RuntimeException("Driver MySQL não encontrado", e);
         }
     }
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, usuario, senha);
-        // { <-- REMOVA ESTA CHAVE
     }
 }

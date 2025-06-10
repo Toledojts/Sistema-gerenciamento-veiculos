@@ -9,7 +9,7 @@ public class PlacaUtil {
 
     /**
      * Verifica se a placa está no formato antigo (LLL-NNNN ou LLLNNNN).
-     * @param placa Placa a ser verificada.
+     * parametro placa -- Placa a ser verificada.
      * @return true se for formato antigo, false caso contrário.
      */
 
@@ -23,8 +23,8 @@ public class PlacaUtil {
 
     /**
      * Verifica se a placa já está no formato Mercosul (LLLNLNN).
-     * @param placa Placa a ser verificada.
-     * @return true se for formato Mercosul, false caso contrário.
+     * parametro placa -- Placa a ser verificada.
+     * retorna true se for formato Mercosul, false caso contrário.
      */
     public static boolean ehPlacaMercosul(String placa) {
         if (placa == null) return false;

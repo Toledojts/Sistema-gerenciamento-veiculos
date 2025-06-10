@@ -9,8 +9,8 @@ public class DataUtil {
 
     /**
      * Converte uma String de data no formato "dd/MM/yyyy" para um objeto LocalDate.
-     * @param dataStr A String da data.
-     * @return Um objeto LocalDate se a conversão for bem-sucedida, null caso contrário.
+     * parametro dataStr - A String da data.
+     * retorna Um objeto LocalDate se a conversão for bem-sucedida, null caso contrário.
      */
     public static LocalDate parseData(String dataStr) {
         if (dataStr == null || dataStr.trim().isEmpty()) {
@@ -26,8 +26,8 @@ public class DataUtil {
 
     /**
      * Formata um objeto LocalDate para uma String no formato "dd/MM/yyyy".
-     * @param data O objeto LocalDate.
-     * @return Uma String da data formatada, ou null se a data de entrada for null.
+     * parametro data - O objeto LocalDate.
+     * retorna Uma String da data formatada, ou null se a data de entrada for null.
      */
     public static String formatarData(LocalDate data) {
         if (data == null) {

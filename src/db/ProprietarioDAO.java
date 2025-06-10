@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class ProprietarioDAO {
     public Proprietario buscarPorCPF(String cpf) {
         Proprietario proprietario = null;
-        String sql = "SELECT cpf, nome FROM proprietario WHERE cpf = ?"; // Assumindo tabela proprietarios
+        String sql = "SELECT cpf, nome FROM proprietario WHERE cpf = ?";
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, cpf);
@@ -28,11 +28,10 @@ public class ProprietarioDAO {
     }
 
     public boolean salvar(Proprietario proprietario) {
-        String sql = "INSERT INTO proprietario (cpf, nome) VALUES (?, ?)"; // SQL está correto (cpf primeiro, nome depois)
+        String sql = "INSERT INTO proprietario (cpf, nome) VALUES (?, ?)";
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // CORREÇÃO AQUI: O índice 1 deve ser o CPF, o índice 2 deve ser o Nome
             pstmt.setString(1, proprietario.getCpf());   // Índice 1 recebe o CPF
             pstmt.setString(2, proprietario.getNome());  // Índice 2 recebe o Nome
             pstmt.executeUpdate();
