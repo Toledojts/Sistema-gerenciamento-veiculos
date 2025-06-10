@@ -121,7 +121,6 @@ public class Program {
             return;
         }
 
-        // --- O RESTO DESTE MÉTODO É O SEU CÓDIGO DE CADASTRO ORIGINAL ---
         // Coleta de dados: marca, modelo, ano, cor, proprietário...
         Marca marcaSelecionada = selecionarMarca();
         if (marcaSelecionada == null) return;

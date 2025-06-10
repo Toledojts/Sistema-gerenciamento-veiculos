@@ -3,6 +3,7 @@ package servicos;
 import db.*;
 import entidades.*;
 import relatorios.ContagemVeiculosPorMarca;
+import utilitarios.CpfUtil;
 import utilitarios.DataUtil;
 import utilitarios.GeradorPlacaUtil;
 import utilitarios.PlacaUtil;
@@ -165,19 +166,14 @@ public class Gerenciador {
     }
 
     public boolean validarFormatoCPF(String cpf) {
-        if (cpf == null) return false;
-        // Verifica se tem exatamente 11 dígitos numéricos
-        boolean valido = cpf.matches("^\\d{11}$");
-        System.out.println("[Gerenciador] Validando CPF " + cpf + ": " + (valido ? "Válido (11 dígitos)" : "Inválido"));
-        return valido;
+        return CpfUtil.validar(cpf); // Apenas chama o utilitário
     }
 
     public Proprietario buscarProprietarioPorCPF(String cpf) {
-        if (cpf == null || cpf.trim().isEmpty() || !validarFormatoCPF(cpf)) { // Validação básica
-            // System.err.println("[Gerenciador] Tentativa de busca por CPF com formato inválido ou vazio."); // Log opcional
+        if (!validarFormatoCPF(cpf)) {
             return null;
         }
-        return proprietarioDAO.buscarPorCPF(cpf); // Reutiliza o método do DAO
+        return proprietarioDAO.buscarPorCPF(cpf);
     }
 
     public boolean transferirPropriedade(String placaVeiculoInput, String cpfNovoProprietarioInput,

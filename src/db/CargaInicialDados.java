@@ -27,20 +27,20 @@ public class CargaInicialDados {
             System.out.println("[Carga Inicial] Inserindo modelos...");
 
             // 3. INSERIR PROPRIETÁRIOS (sem dependências)
-            stmt.addBatch("INSERT INTO proprietario (cpf, nome) VALUES ('11122233344', 'Ana Silva'), ('55566677788', 'Carlos Souza');");
+            stmt.addBatch("INSERT INTO proprietario (cpf, nome) VALUES ('27665173080', 'Ana Silva'), ('12453567047', 'Carlos Souza');");
             System.out.println("[Carga Inicial] Inserindo proprietários...");
 
             // 4. INSERIR VEÍCULOS (dependem de Marca, Modelo, Proprietario)
             //Coluna status tem ATIVO como padrao - não é necessário inserir status
             stmt.addBatch(
                     "INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
-                            "VALUES " + "('ABC-1234', 2020, 'Branco', '11122233344', 1, 2);");
+                            "VALUES " + "('ABC-1234', 2020, 'Branco', '27665173080', 1, 2);");
             stmt.addBatch(
                     "INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
-                            "VALUES " + "('XYZ-5678', 2021, 'Preto', '55566677788', 2, 3);");
+                            "VALUES " + "('XYZ-5678', 2021, 'Preto', '12453567047', 2, 3);");
 
             stmt.addBatch("INSERT INTO veiculo (placa, ano, cor, proprietarioAtualCpf, IdMarca, IdModelo) " +
-                    "VALUES ('QWE-9101', 2022, 'Prata', '11122233344', 3, 5);");
+                    "VALUES ('QWE-9101', 2022, 'Prata', '27665173080', 3, 5);");
 
             System.out.println("[Carga Inicial] Inserindo veículos...");
 
