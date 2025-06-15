@@ -160,7 +160,7 @@ public class Program {
         String nome = obterNomeProprietarioSeNecessario(cpf);
         if (nome == null) return;
 
-        // Chama o NOVO método sobrecarregado do Gerenciador (sem a placa)
+        // Chama o metodo sobrecarregado do Gerenciador (sem a placa)
         boolean sucesso = gerenciador.cadastrarVeiculo(marcaSelecionada, modeloSelecionado, ano, cor, cpf, nome);
 
         if (sucesso) {
@@ -186,8 +186,12 @@ public class Program {
             try {
                 int escolha = sc.nextInt(); // Lê número
                 sc.nextLine(); // Consome \n
-                if (escolha > 0 && escolha <= marcas.size()) { return marcas.get(escolha - 1); }
-                else { System.out.println("Opção inválida."); }
+                if (escolha > 0 && escolha <= marcas.size()) {
+                    return marcas.get(escolha - 1);
+                }
+                else {
+                    System.out.println("Opção inválida.");
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Entrada inválida. Digite um número.");
                 sc.nextLine(); // Consome entrada inválida
@@ -342,7 +346,7 @@ public class Program {
         System.out.print("Digite a data da transferência (formato dd/MM/yyyy): ");
         String dataTransferenciaStr = sc.nextLine().trim();
 
-        // Agora, ao chamar o método principal de transferência no Gerenciador,
+        // Ao chamar o metodo principal de transferência no Gerenciador,
         // ele ainda fará suas próprias validações e busca do veículo para garantir
         // a consistência dos dados no momento da transação.
         boolean sucesso = gerenciador.transferirPropriedade(

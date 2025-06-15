@@ -21,8 +21,8 @@ public class MarcaDAO {
             System.out.println("[MarcaDAO] Executando consulta: " + sql);
             while (rs.next()) {
                 // Lê os dados de cada linha do resultado
-                int id = rs.getInt("idMarca"); // Use o nome exato da coluna
-                String nome = rs.getString("nomeMarca"); // Use o nome exato da coluna
+                int id = rs.getInt("idMarca"); // Usa o nome exato da coluna
+                String nome = rs.getString("nomeMarca"); // Usa o nome exato da coluna
 
                 // Cria um objeto Marca e adiciona à lista
                 marcas.add(new Marca(id, nome));

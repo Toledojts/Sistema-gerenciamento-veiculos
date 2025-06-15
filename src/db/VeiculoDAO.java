@@ -64,7 +64,7 @@ public class VeiculoDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println("[VeiculoDAO] Veículo encontrado no ResultSet para placa: " + placaParametro); // Para depuração
+                    System.out.println("[VeiculoDAO] Veículo encontrado no ResultSet para placa: " + placaParametro); //Para depuração
 
                     // Criar Marca
                     Marca marca = null;
@@ -110,7 +110,7 @@ public class VeiculoDAO {
     }
 
     public boolean atualizarVeiculoParaTransferencia(String placaOriginalParam, String placaNova, String cpfNovoProprietario){
-        String sql = "UPDATE veiculo SET placa = ?, proprietarioAtualCpf = ? WHERE UPPER(REPLACE(placa, '-', '')) = ?"; // MODIFICAÇÃO AQUI
+        String sql = "UPDATE veiculo SET placa = ?, proprietarioAtualCpf = ? WHERE UPPER(REPLACE(placa, '-', '')) = ?";
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

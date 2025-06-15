@@ -118,7 +118,7 @@ public class Gerenciador {
         System.out.println("[Gerenciador] Objeto Veiculo pronto para salvar.");
 
         // Salva Veículo no Banco
-        // Adiciona verificação se placa já existe seria ideal aqui antes de salvar
+        // Adiciona verificação se placa já existe
         boolean salvouVeiculo = veiculoDAO.salvar(novoVeiculo);
         if (!salvouVeiculo){
             System.err.println("[Gerenciador] Falha ao salvar o veículo. Verifique os logs do DAO.");
@@ -251,7 +251,7 @@ public class Gerenciador {
         }
 
         // Atualiza Veículo no Banco de Dados (Proprietário e possivelmente a Placa)
-        // Este método no DAO precisa lidar com a mudança da PK se a placa for alterada.
+        // Este metodo no DAO precisa lidar com a mudança da PK se a placa for alterada.
         // É crucial que a tabela 'veiculo' tenha 'ON UPDATE CASCADE' para a FK 'placa'
         // se outras tabelas (como 'transferencia' antiga) dependerem dela e a placa mudar.
         // Como estamos criando um *novo* registro de transferência, ele usará a 'placaFinalVeiculo'.
@@ -269,7 +269,6 @@ public class Gerenciador {
 
 
         // Cria e Salva Registro de Transferência
-        // O construtor de Transferencia foi atualizado para receber o Veiculo
         Transferencia novaTransferencia = new Transferencia(proprietarioAnterior, novoProprietario, dataTransferencia, veiculo);
 
         if (!transferenciaDAO.salvar(novaTransferencia)) {
