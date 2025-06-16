@@ -115,9 +115,9 @@ public class VeiculoDAO {
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, placaNova);           // A nova placa (ex: "CBA5C78")
-            pstmt.setString(2, cpfNovoProprietario); // O CPF do novo proprietário
-            pstmt.setString(3, placaOriginalParam);  // A placa original normalizada para encontrar no WHERE (ex: "CBA5678")
+            pstmt.setString(1, placaNova);
+            pstmt.setString(2, cpfNovoProprietario);
+            pstmt.setString(3, placaOriginalParam);
 
             int linhasAfetadas = pstmt.executeUpdate();
             if (linhasAfetadas > 0) {
@@ -227,7 +227,6 @@ public class VeiculoDAO {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                // ... (criação de Marca, Modelo, Proprietario) ...
                 Marca marca = new Marca(rs.getInt("marca_id"), rs.getString("marca_nome"));
                 Modelo modelo = new Modelo(rs.getInt("modelo_id"), rs.getString("modelo_nome"), marca);
 

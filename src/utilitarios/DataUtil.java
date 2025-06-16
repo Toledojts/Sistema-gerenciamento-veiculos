@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 public class DataUtil {
     private static final DateTimeFormatter FORMATADOR_BRASILEIRO = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    /**
+    /*
      * Converte uma String de data no formato "dd/MM/yyyy" para um objeto LocalDate.
      * parametro dataStr - A String da data.
      * retorna Um objeto LocalDate se a conversão for bem-sucedida, null caso contrário.
@@ -24,7 +24,7 @@ public class DataUtil {
         }
     }
 
-    /**
+    /*
      * Formata um objeto LocalDate para uma String no formato "dd/MM/yyyy".
      * parametro data - O objeto LocalDate.
      * retorna Uma String da data formatada, ou null se a data de entrada for null.

@@ -32,8 +32,8 @@ public class ProprietarioDAO {
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, proprietario.getCpf());   // Índice 1 recebe o CPF
-            pstmt.setString(2, proprietario.getNome());  // Índice 2 recebe o Nome
+            pstmt.setString(1, proprietario.getCpf());
+            pstmt.setString(2, proprietario.getNome());
             pstmt.executeUpdate();
 
             return true;

@@ -18,22 +18,20 @@ public class ModeloDAO {
 
         if (marca == null) {
             System.err.println("[ModeloDAO] Erro: Marca não pode ser nula para listar modelos.");
-            return modelos; // Retorna lista vazia
+            return modelos;
         }
 
         try (Connection conn = Conexao.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Define o parâmetro da query (?)
             pstmt.setInt(1, marca.getId());
-            System.out.println("[ModeloDAO] Executando consulta: " + pstmt.toString()); // Mostra a query com o parâmetro
+            System.out.println("[ModeloDAO] Executando consulta: " + pstmt.toString());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    int id = rs.getInt("idModelo"); // Nome exato da coluna
-                    String nome = rs.getString("nomeModelo"); // Nome exato da coluna
+                    int id = rs.getInt("idModelo");
+                    String nome = rs.getString("nomeModelo");
 
-                    // Cria o objeto Modelo, passando a Marca que já temos
                     modelos.add(new Modelo(id, nome, marca));
                 }
                 System.out.println("[ModeloDAO] Modelos encontrados para " + marca.getNome() + ": " + modelos.size());
