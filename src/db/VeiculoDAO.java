@@ -262,7 +262,7 @@ public class VeiculoDAO {
         return veiculosComPlacaAntiga;
     }
 
-    public boolean darBaixaVeiculo(String placaNormalizada) {
+    public boolean baixarVeiculo(String placaNormalizada) {
         String sql = "UPDATE veiculo SET status = 'INATIVO', proprietarioAtualCpf = NULL WHERE UPPER(REPLACE(placa, '-', '')) = ?";
 
         try (Connection conn = Conexao.getConnection();

@@ -45,7 +45,7 @@ public class PlacaUtil {
 
         if (!PADRAO_PLACA_ANTIGA_SEM_HIFEN.matcher(placaLimpa).matches()) {
             // Não é um formato antigo válido para conversão ou já pode ser Mercosul
-            return placaAntiga.toUpperCase(); // Retorna a placa original (em maiúsculas)
+            return placaAntiga.toUpperCase(); // Retorna a placa original em maiúsculas
         }
 
         // LLLNNNN -> LLLNLNN

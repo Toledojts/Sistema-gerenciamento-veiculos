@@ -103,7 +103,7 @@ public class Program {
                 break;
             case 3:
                 System.out.println("Retornando ao Menu Principal...");
-                return; // Sai do método e volta ao menu principal
+                return;
             default:
                 System.out.println("Opção inválida.");
                 break;
@@ -115,13 +115,11 @@ public class Program {
 
         String placa = obterPlacaValida();
 
-        // Reutiliza verificação de placa existente
         if (gerenciador.verificarPlacaExistente(placa)) {
             System.out.println("[ERRO] A placa '" + placa.toUpperCase() + "' já está cadastrada no sistema. Cadastro cancelado.");
             return;
         }
 
-        // Coleta de dados: marca, modelo, ano, cor, proprietário...
         Marca marcaSelecionada = selecionarMarca();
         if (marcaSelecionada == null) return;
 
@@ -134,7 +132,6 @@ public class Program {
         String nome = obterNomeProprietarioSeNecessario(cpf); // Este método já busca ou pede o nome
         if (nome == null) return;
 
-        // Chama o método original do Gerenciador
         boolean sucesso = gerenciador.cadastrarVeiculo(placa, marcaSelecionada, modeloSelecionado, ano, cor, cpf, nome);
 
         if (sucesso) {
@@ -310,20 +307,14 @@ public class Program {
         System.out.print("Digite a placa do veículo a ser transferido: ");
         String placaVeiculoInput = sc.nextLine().trim();
 
-        // === VERIFICAÇÃO INICIAL DO VEÍCULO ===
         Veiculo veiculoParaTransferir = gerenciador.buscarVeiculoPorPlacaMenu(placaVeiculoInput);
 
         if (veiculoParaTransferir == null) {
             System.out.println("Veículo com placa '" + placaVeiculoInput.toUpperCase() + "' não encontrado no sistema. Transferência cancelada.");
             return; // Interrompe a operação
         } else {
-            System.out.println("Veículo encontrado: " +
-                    (veiculoParaTransferir.getMarca() != null ? veiculoParaTransferir.getMarca().getNome() : "Marca Desconhecida") + " " +
-                    (veiculoParaTransferir.getModelo() != null ? veiculoParaTransferir.getModelo().getNome() : "Modelo Desconhecido") +
-                    ", Placa: " + veiculoParaTransferir.getPlaca() +
-                    ", Proprietário Atual: " + (veiculoParaTransferir.getProprietarioAtual() != null ? veiculoParaTransferir.getProprietarioAtual().getNome() : "N/A"));
+            System.out.println("Veículo encontrado: " + veiculoParaTransferir);
         }
-        // === FIM DA VERIFICAÇÃO INICIAL DO VEÍCULO ===
 
         System.out.print("Digite o CPF do NOVO proprietário (11 dígitos): ");
         String cpfNovoProprietario = sc.nextLine().trim();
@@ -346,11 +337,8 @@ public class Program {
         System.out.print("Digite a data da transferência (formato dd/MM/yyyy): ");
         String dataTransferenciaStr = sc.nextLine().trim();
 
-        // Ao chamar o metodo principal de transferência no Gerenciador,
-        // ele ainda fará suas próprias validações e busca do veículo para garantir
-        // a consistência dos dados no momento da transação.
         boolean sucesso = gerenciador.transferirPropriedade(
-                placaVeiculoInput, // Passa a placa que o usuário digitou
+                placaVeiculoInput,
                 cpfNovoProprietario,
                 nomeNovoProprietario,
                 dataTransferenciaStr
@@ -359,7 +347,6 @@ public class Program {
         if (sucesso) {
             System.out.println("\n--- TRANSFERÊNCIA DE PROPRIEDADE REALIZADA COM SUCESSO! ---");
         } else {
-            // A mensagem de erro específica já terá sido impressa pelo Gerenciador ou DAOs
             System.out.println("\n--- FALHA NA TRANSFERÊNCIA DE PROPRIEDADE. ---");
         }
     }
@@ -553,10 +540,8 @@ public class Program {
         System.out.print("Digite a placa do veículo que deseja dar baixa: ");
         String placaInput = sc.nextLine().trim();
 
-        // Chama o método do Gerenciador que contém toda a lógica
         boolean sucesso = gerenciador.darBaixaVeiculo(placaInput);
 
-        // Fornece um feedback claro ao usuário com base no resultado
         if (sucesso) {
             System.out.println("\n--- VEÍCULO BAIXADO COM SUCESSO! ---");
             System.out.println("O veículo com placa '" + placaInput.toUpperCase() + "' foi marcado como INATIVO e seu proprietário foi desvinculado.");

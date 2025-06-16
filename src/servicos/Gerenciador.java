@@ -14,8 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class Gerenciador {
 
@@ -79,13 +77,10 @@ public class Gerenciador {
             System.err.println("[Gerenciador] Erro: Formato do CPF inválido (deve ter 11 dígitos).");
             return false;
         }
-        // Já validado
 
-        // Trata Proprietário
         Proprietario proprietario = proprietarioDAO.buscarPorCPF(cpfProprietarioInput);
         if (proprietario == null) {
             System.out.println("[Gerenciador] Proprietário com CPF " + cpfProprietarioInput + " não encontrado. Cadastrando novo...");
-            // Validar nome (não pode ser vazio)
             if (nomeProprietarioInput == null || nomeProprietarioInput.trim().isEmpty()) {
                 System.err.println("[Gerenciador] Erro: Nome do novo proprietário não pode ser vazio.");
                 return false;
@@ -102,30 +97,28 @@ public class Gerenciador {
             System.out.println("[Gerenciador] Proprietário encontrado: " + proprietario.getNome() + " (CPF: " + proprietario.getCpf() + ")");
         }
 
-        // Valida outros dados (básico)
+        // Valida outros dados
         if (marca == null || modelo == null || ano <= 1900 || cor == null || cor.trim().isEmpty()) {
             System.err.println("[Gerenciador] Erro: Dados do veículo (marca, modelo, ano, cor) inválidos.");
             return false;
         }
-        // Valida se modelo pertence à marca (extra)
+
+        // Valida se modelo pertence à marca
         if (modelo.getMarca().getId() != marca.getId()) {
             System.err.println("[Gerenciador] Erro: Inconsistência - Modelo não pertence à Marca selecionada.");
             return false;
         }
 
-        // Cria Objeto Veiculo
         Veiculo novoVeiculo = new Veiculo(placa, marca, modelo, ano, cor.trim(), "ATIVO", proprietario);
         System.out.println("[Gerenciador] Objeto Veiculo pronto para salvar.");
 
-        // Salva Veículo no Banco
-        // Adiciona verificação se placa já existe
         boolean salvouVeiculo = veiculoDAO.salvar(novoVeiculo);
         if (!salvouVeiculo){
             System.err.println("[Gerenciador] Falha ao salvar o veículo. Verifique os logs do DAO.");
             return false;
         }
         System.out.println("[Gerenciador] Cadastro concluído com sucesso para placa: " + placa);
-        return true; // Indica sucesso
+        return true;
     }
 
     //metodo para cadastro sem placa
@@ -134,14 +127,12 @@ public class Gerenciador {
 
         String novaPlaca;
         do {
-            // CHAMANDO O GERADOR
             novaPlaca = GeradorPlacaUtil.gerarPlacaMercosul();
-            System.out.println("[Gerenciador] Tentativa de placa gerada: " + novaPlaca);
         } while (verificarPlacaExistente(novaPlaca));
 
         System.out.println("[Gerenciador] Placa única '" + novaPlaca + "' gerada e validada.");
 
-        // Chama o método de cadastro original com a placa gerada
+        // Metodo original
         return cadastrarVeiculo(novaPlaca, marca, modelo, ano, cor, cpfProprietarioInput, nomeProprietarioInput);
     }
 
@@ -158,14 +149,11 @@ public class Gerenciador {
     }
 
     public boolean validarFormatoPlaca(String placa) {
-        if (placa == null) return false;
-        // Padrão Antigo: LLL-NNNN (L=Letra, N=Número)
-        Pattern padraoAntigo = Pattern.compile("^[A-Z]{3}-\\d{4}$", Pattern.CASE_INSENSITIVE);
-        // Padrão Mercosul: LLLNLNN
-        Pattern padraoMercosul = Pattern.compile("^[A-Z]{3}\\d[A-Z]\\d{2}$", Pattern.CASE_INSENSITIVE);
+        // Uma placa é válida se ela for do formato antigo OU do formato Mercosul.
+        boolean ehValida = PlacaUtil.ehPlacaAntiga(placa) || PlacaUtil.ehPlacaMercosul(placa);
+        System.out.printf("[Gerenciador] Validação da placa %s: %s%n", placa, (ehValida ? "Válido" : "Formato inválido"));
 
-        boolean valido = padraoAntigo.matcher(placa).matches() || padraoMercosul.matcher(placa).matches();
-        return valido;
+        return ehValida;
     }
 
     public boolean validarFormatoCPF(String cpf) {
@@ -250,11 +238,6 @@ public class Gerenciador {
             System.out.println("[Gerenciador] Placa antiga " + placaOriginalVeiculo + " convertida para Mercosul: " + placaFinalVeiculo + ".");
         }
 
-        // Atualiza Veículo no Banco de Dados (Proprietário e possivelmente a Placa)
-        // Este metodo no DAO precisa lidar com a mudança da PK se a placa for alterada.
-        // É crucial que a tabela 'veiculo' tenha 'ON UPDATE CASCADE' para a FK 'placa'
-        // se outras tabelas (como 'transferencia' antiga) dependerem dela e a placa mudar.
-        // Como estamos criando um *novo* registro de transferência, ele usará a 'placaFinalVeiculo'.
         boolean atualizouVeiculo = veiculoDAO.atualizarVeiculoParaTransferencia(placaOriginalVeiculo, placaFinalVeiculo, novoProprietario.getCpf());
 
         if (!atualizouVeiculo) {
@@ -286,10 +269,8 @@ public class Gerenciador {
             System.err.println("[Gerenciador] Placa não fornecida para busca.");
             return null;
         }
-        // A normalização deve ser consistente com a usada na busca principal
         String placaNormalizada = placaInput.toUpperCase().replace("-", "");
 
-        // Validação de formato ANTES de ir ao DAO (opcional, mas bom)
         if (!(PlacaUtil.ehPlacaAntiga(placaNormalizada) || PlacaUtil.ehPlacaMercosul(placaNormalizada))) {
             System.err.println("[Gerenciador] Formato de placa inválido para busca: " + placaNormalizada);
             return null;
@@ -367,7 +348,7 @@ public class Gerenciador {
             return false;
         }
 
-        // 3. Verifica se o veículo já está inativo
+        // 3. Verifica se o veículo já não está inativo
         if ("INATIVO".equalsIgnoreCase(veiculo.getStatus())) {
             System.err.println("[Gerenciador] O veículo com placa '" + veiculo.getPlaca() + "' já está baixado (inativo). Nenhuma ação foi tomada.");
             return false; // Retorna false para indicar que nenhuma alteração foi feita
@@ -375,12 +356,11 @@ public class Gerenciador {
 
         // 4. Se o veículo existe e está ativo, proceder com a baixa no DAO
         System.out.println("[Gerenciador] Veículo encontrado e ativo. Prosseguindo com a baixa...");
-        boolean sucessoNaBaixa = veiculoDAO.darBaixaVeiculo(placaNormalizada);
+        boolean sucessoNaBaixa = veiculoDAO.baixarVeiculo(placaNormalizada);
 
         if (sucessoNaBaixa) {
             System.out.println("[Gerenciador] Baixa do veículo com placa '" + veiculo.getPlaca() + "' realizada com sucesso no banco de dados.");
         } else {
-            // A mensagem de erro específica do SQL já terá sido impressa pelo DAO
             System.err.println("[Gerenciador] Ocorreu uma falha no DAO ao tentar dar baixa no veículo.");
         }
 

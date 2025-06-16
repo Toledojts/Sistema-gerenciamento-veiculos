@@ -3,13 +3,9 @@ package utilitarios;
 import java.util.Random;
 
 public class GeradorPlacaUtil {
+
     private static final Random random = new Random();
 
-    /**
-     * Gera uma placa aleatória no padrão Mercosul (formato LLLNLNN).
-     * Exemplo de placa gerada: BRA1A23
-     * retorna Uma String representando a placa gerada.
-     */
     public static String gerarPlacaMercosul() {
         StringBuilder sb = new StringBuilder();
 

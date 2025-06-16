@@ -112,7 +112,6 @@ public class TransferenciaDAO {
     public List<Transferencia> buscarTransferenciasPorPeriodo(LocalDate dataInicio, LocalDate dataFim){
         List<Transferencia> transferenciasNoPeriodo = new ArrayList<>();
 
-        // VERIFIQUE CADA LINHA DESTA QUERY COM MUITA ATENÇÃO
         String sql = "SELECT " +
                 "t.dataTransferencia, " +
                 "v.placa AS veiculo_placa_transferida, v.status, " +
