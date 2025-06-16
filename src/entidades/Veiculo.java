@@ -70,6 +70,6 @@ public class Veiculo {
     }
 
     public String toString(){
-        return marca + " " + modelo + " " + ano + ", cor " + cor + " - " + placa + "\n" + "Proprietário: " + proprietarioAtual;
+        return marca + " " + modelo + " " + ano + ", Cor: " + cor + " - " + placa + "\n" + "Proprietário: " + proprietarioAtual;
     }
 }

@@ -49,7 +49,9 @@ public class Transferencia {
     }
 
     public String toString(){
-        return "Antigo proprietário: " + antigoProprietario + "\n" + "Novo proprietário: " + novoProprietario
+        return "Veículo: " + veiculo.getPlaca() +" (" + veiculo.getMarca() + " " + veiculo.getModelo() +
+                ", Ano: " + veiculo.getAno()+ ", Cor: " + veiculo.getCor() + ")\n" +
+                "Antigo proprietário: " + antigoProprietario + "\n" + "Novo proprietário: " + novoProprietario
                 + "\n" + "Data da transferência: " + dataTransferencia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 

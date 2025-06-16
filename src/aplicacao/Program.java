@@ -504,6 +504,7 @@ public class Program {
                         (t.getAntigoProprietario() != null ? t.getAntigoProprietario().getNome() + " (CPF: " + t.getAntigoProprietario().getCpf() + ")" : "N/A"));
                 System.out.println("Novo Proprietário: " +
                         (t.getNovoProprietario() != null ? t.getNovoProprietario().getNome() + " (CPF: " + t.getNovoProprietario().getCpf() + ")" : "N/A"));
+
             }
             System.out.println("--------------------------------------------------");
             System.out.println("Total de transferências no período: " + relatorio.size());
