@@ -7,6 +7,7 @@ import java.sql.Statement;
 public class CargaInicialDados {
 
     public static void popularBanco(Connection conn) {
+
         try (Statement stmt = conn.createStatement()) {
             System.out.println("[Carga Inicial] Populando o banco de dados com dados de exemplo...");
 
@@ -55,7 +56,7 @@ public class CargaInicialDados {
             System.err.println("[Carga Inicial] ERRO ao popular o banco de dados: " + e.getMessage());
             e.printStackTrace();
             try {
-                // Em caso de erro, reverter a transação
+                // Em caso de erro, reverter a transação - através do rollback
                 System.err.println("[Carga Inicial] Revertendo transação...");
                 conn.rollback();
             } catch (SQLException ex) {

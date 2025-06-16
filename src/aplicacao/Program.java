@@ -254,6 +254,7 @@ public class Program {
         }
     }
 
+    //obtendo cor valida do veículo
     private String obterCorValida() {
         while(true) {
             System.out.print("Cor do veículo: ");
